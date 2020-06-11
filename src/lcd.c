@@ -4,6 +4,7 @@
 #include "lcd.h"
 
 
+// Write a string into a buffer to display it on the LCD, utilizing charset.h
 void lcd_write_string(uint8_t *buffer, char * s, uint16_t slice, uint16_t line){
     uint8_t j = 0;
     while(s[j] != 0){
@@ -15,10 +16,13 @@ void lcd_write_string(uint8_t *buffer, char * s, uint16_t slice, uint16_t line){
     }
 }
 
+// Updates the buffer
 void lcd_update(uint8_t *buffer){
         lcd_push_buffer(buffer);
 }
 
+
+// Makes the text scroll left on the LCD
 void lcd_scroll_left(uint8_t *buffer){
     uint8_t i, temp[4];
     temp[0] = buffer[0];

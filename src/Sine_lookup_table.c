@@ -122,7 +122,6 @@ void rotate(vector_t *v, int32_t angle){
     temp_y = FIX14_MULT(v->x, sinn(angle)) + FIX14_MULT(v->y, coss(angle));
     v->x = temp_x;
     v->y = temp_y;
-
 }
 
 

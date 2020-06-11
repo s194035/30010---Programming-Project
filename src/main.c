@@ -32,7 +32,7 @@ int main(void)
  uint8_t buffer[512];
  memset(buffer, 0x00, 512);
  lcd_init();
- lcd_write_string(buffer, "Goddag", 1, 1);
+ lcd_write_string(buffer, "Goddag og jfdkslafdsafdasklfdjskal", 1, 1);
 
 
  while(1) {

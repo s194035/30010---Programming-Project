@@ -19,19 +19,19 @@ void pinSetup(uint16_t port, char portName, uint32_t moder, uint32_t puder){
         GPIOA->PUPDR |= (puder << (port * 2)); // Set push/pull register (0x00 - No pull, 0x01 - Pull-up, 0x02 - Pull-down)
 
         if(moder == 1){
-            GPIOA->MODER &= ~(0x00000003 << (port * 2));
-            GPIOA->MODER |=  (0x00000001 << (port * 2));
-            GPIOA->OTYPER &= ~(0x0001 << (port));
-            GPIOA->OTYPER |= (0x0000 << (port));
-            GPIOA->OSPEEDR &= (0x0000003 << (port*2));
-            GPIOA->OSPEEDR |= (0x0000002 << (port *2));
+            GPIOA->MODER &= ~(0x00000003 << (port * 2)); // Clear mode register
+            GPIOA->MODER |=  (0x00000001 << (port * 2)); // Set mode register to input
+            GPIOA->OTYPER &= ~(0x0001 << (port)); // Clear otype register
+            GPIOA->OTYPER |= (0x0000 << (port)); // Set otype to output
+            GPIOA->OSPEEDR &= (0x0000003 << (port*2)); // Clear Speed register
+            GPIOA->OSPEEDR |= (0x0000002 << (port *2)); // Set speed to 2MHz
         }
     }
     else if(portName == 'B'){
-        GPIOB->MODER &= ~(0x00000003 << (port * 2)); // Clear mode register
-        GPIOB->MODER |= (moder << (port * 2)); // Set mode register (0x00 – Input, 0x01 - Output, 0x02 - Alternate Function, 0x03 - Analog in/out)
-        GPIOB->PUPDR &= ~(0x00000003 << (port * 2)); // Clear push/pull register
-        GPIOB->PUPDR |= (puder << (port * 2)); // Set push/pull register (0x00 - No pull, 0x01 - Pull-up, 0x02 - Pull-down)
+        GPIOB->MODER &= ~(0x00000003 << (port * 2));
+        GPIOB->MODER |= (moder << (port * 2));
+        GPIOB->PUPDR &= ~(0x00000003 << (port * 2));
+        GPIOB->PUPDR |= (puder << (port * 2));
 
         if(moder == 1){
             GPIOB->MODER &= ~(0x00000003 << (port * 2));
@@ -43,10 +43,10 @@ void pinSetup(uint16_t port, char portName, uint32_t moder, uint32_t puder){
         }
     }
     else if(portName == 'C'){
-        GPIOC->MODER &= ~(0x00000003 << (port * 2)); // Clear mode register
-        GPIOC->MODER |= (moder << (port * 2)); // Set mode register (0x00 – Input, 0x01 - Output, 0x02 - Alternate Function, 0x03 - Analog in/out)
-        GPIOC->PUPDR &= ~(0x00000003 << (port * 2)); // Clear push/pull register
-        GPIOC->PUPDR |= (puder << (port * 2)); // Set push/pull register (0x00 - No pull, 0x01 - Pull-up, 0x02 - Pull-down)
+        GPIOC->MODER &= ~(0x00000003 << (port * 2));
+        GPIOC->MODER |= (moder << (port * 2));
+        GPIOC->PUPDR &= ~(0x00000003 << (port * 2));
+        GPIOC->PUPDR |= (puder << (port * 2));
 
         if(moder == 1){
             GPIOC->MODER &= ~(0x00000003 << (port * 2));
@@ -84,6 +84,10 @@ void ioConfig(){
     while (!(ADC1->ISR & 0x00000001)); // Wait until ready
 }
 
+
+
+
+
 /*
 Bit 0: Up
 Bit 1: Down
@@ -104,7 +108,7 @@ uint8_t readJoystick(){
 
     return x;
 }
-
+// Setting up joystick utilizing pinSetup function above
 void JoystickSetup(){
  pinSetup(1, 'C', 0, 1);
  pinSetup(5, 'B', 0, 1);
@@ -113,6 +117,7 @@ void JoystickSetup(){
  pinSetup(4, 'A', 0, 1);
 }
 
+// Setting up led pins to output
 void LedPinSetup(uint8_t port, char portName, uint8_t value){
 
     if(portName == 'A'){
@@ -153,6 +158,8 @@ void ledsetup(){
     setLed(0,0,0);         // Initially no light up
 }
 
+
+// Setup led such that it depends on the direction of the joystick
 void ledJoystick(){
     if(readJoystick()== 1){
         setLed(0,0,0);
@@ -193,7 +200,6 @@ uint8_t readADC1(){
 
 uint8_t readADC2(){
     pinSetup(1,'A',0,1);
-
 
     ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_1Cycles5);
     ADC_StartConversion(ADC1); // Start ADC read

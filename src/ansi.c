@@ -11,12 +11,12 @@ void fgcolor(uint8_t foreground) {
     ------------------------------------------------
       0        Black            8       Dark Gray
       1        Red              9       Light Red
-      2        Green           10       Light Green
+      2        Green           10       Light GreenstartTimer()
       3        Brown           11       Yellow
       4        Blue            12       Light Blue
       5        Purple          13       Light Purple
       6        Cyan            14       Light Cyan
-      7        Light Gray      15       White
+      7        Light Gray      15       WhitestartTimer()
 */
   uint8_t type = 22;             // normal text
 	if (foreground > 7) {
@@ -63,18 +63,20 @@ void resetbgcolor() {
   printf("%c[m", ESC);
 }
 
+
 void clrscr(){
-    printf("%c[2J", ESC);
+    printf("%c[2J", ESC); // Clear Putty terminal
 }
 
 void clreol(){
-    printf("%c[2K", ESC);
+    printf("%c[2K", ESC); // Clear particular line in Putty terminal
 }
 
 void gotoxy(int x, int y){
-    printf("%c[%d;%dH", ESC, y, x);
+    printf("%c[%d;%dH", ESC, y, x); // Go to coordinate (x,y) in Putty terminal
 }
 
+// Underline text in Putty terminal
 void underline(uint8_t on){
     if(on == 1)
         printf("%c[4m", ESC);
@@ -82,10 +84,12 @@ void underline(uint8_t on){
         printf("%c[24m", ESC);
 }
 
+// Makes text blink in Putty terminal
 void blink(uint8_t on){
     printf("%c[%dm", ESC, (on == 1) ? 05 : 25);
 }
 
+// Inverts the colors of the foreground text and background.
 void inverse(uint8_t on){
     printf("%c[%dm", ESC, (on == 1) ? 07 : 27);
 }
@@ -122,13 +126,16 @@ void box(int x1, int y1, int x2, int y2){
     }
 }
 
+// This functions draws a window with a title and 2 different styles.
 void window(int x1, int y1, int x2, int y2, char text[], char style){
+    int i;
     inverse(0);
     clrscr();
 
     bgcolor(6);
     fgcolor(0);
 
+    // Defining the window corners.
     char upLeft = (style == 1) ? 218 : 201;
     char downLeft = (style == 1) ? 192 : 200;
     char upRight = (style == 1) ? 191 : 187;
@@ -137,6 +144,7 @@ void window(int x1, int y1, int x2, int y2, char text[], char style){
     char titleLeft = (style == 1) ? 180 : 185;
 
 
+    // Drawing the window corners.
     gotoxy(x1,y1);
     printf("%c",upLeft);
     gotoxy(x1,y2);
@@ -146,8 +154,8 @@ void window(int x1, int y1, int x2, int y2, char text[], char style){
     gotoxy(x2,y1);
     printf("%c",upRight);
 
-    int i;
 
+    // Choosing between 2 different styles of window borders.
     if(style != 1){
         for(i = x1+1; i<x2; i++){
             gotoxy(i,y1);
@@ -183,6 +191,7 @@ void window(int x1, int y1, int x2, int y2, char text[], char style){
     printf("%c",titleRight);
 
 
+    // Printing the title
     inverse(1);
     int j = 0;
     fgcolor(0);

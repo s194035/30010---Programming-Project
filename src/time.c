@@ -1,6 +1,6 @@
-#include "stm32f30x_conf.h" // STM32 config
+#include "stm32f30x_conf.h"
 #include "stm32f30x.h"
-#include "30010_io.h" // Input/output library for this course
+#include "30010_io.h"
 #include "ansi.h"
 #include "time.h"
 

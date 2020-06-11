@@ -1,9 +1,3 @@
-// =====================================================================
-//
-//	Exported by Cearn's excellut v1.0
-//	(comments, kudos, flames to daytshen@hotmail.com)
-//
-// =====================================================================
 #include "30010_io.h"
 
 #ifndef SINE_LOOKUP_TABLE_H
@@ -17,14 +11,21 @@
 
 // === LUT DECLARATIONS ===
 extern const signed short SIN[512];
+
 typedef struct {
     int32_t x,y;
 } vector_t;
+
 void printFix(int32_t i);
+
 int32_t expand(int32_t i);
+
 int sinn(int i);
+
 int coss(int i);
+
 void initVector(vector_t *v, int32_t x, int32_t y);
+
 void rotate(vector_t *v, int32_t angle);
 
 #endif	// SINE_LOOKUP_TABLE_H

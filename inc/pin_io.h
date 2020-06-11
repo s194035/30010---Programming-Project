@@ -5,11 +5,18 @@
 #include "30010_io.h"
 
 uint8_t readJoystick();
+
 void pinSetup(uint16_t port, char portName, uint32_t moder, uint32_t puder);
+
 void ioConfig();
+
 void setLed(uint8_t r, uint8_t b, uint8_t g);
+
 void ledsetup();
+
 void ledJoystick();
+
 uint8_t readADC1();
+
 uint8_t readADC2();
 #endif // PIN_IO_H
