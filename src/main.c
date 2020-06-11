@@ -9,18 +9,43 @@
 #include<string.h>
 #include "charset.h"
 #include "lcd.h"
+#include "time.h"
 
+static uint16_t updateLCD;
+
+void TIM2_IRQHandler(void){
+
+    updateLCD++;
+    TIM2->SR &= ~0x0001; // Clear interrupt bit
+}
 
 int main(void)
 {
- ioConfig();
- uint8_t a;
- ledsetup();
+ uart_init( 115200 );
+
+
+
+ setupTimer();
+ startTimer();
+
+    updateLCD = 0;
+ uint8_t buffer[512];
+ memset(buffer, 0x00, 512);
+ lcd_init();
+ lcd_write_string(buffer, "Goddag", 1, 1);
 
 
  while(1) {
-    a = readJoystick();
-    printf("%d\n",a);
-    ledJoystick();
+
+
+     if (updateLCD >= 100){
+         lcd_scroll_left(buffer);
+         lcd_update(buffer);
+         updateLCD = 0;
+     }
+
+
+     printf("%d\n",updateLCD);
+    }
 }
-}
+
