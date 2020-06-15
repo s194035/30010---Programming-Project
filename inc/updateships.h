@@ -18,13 +18,13 @@ typedef struct {
     int8_t boxY2;
 
 
-} player_t;
+} gobj_t;
 
-void spawnLaser(player_t *player, player_t *laser);
-void updatePlayer(player_t *player, player_t *laser);
-void updateLaser(player_t *laser);
-void initPlayer(player_t *player);
-void drawPlayer(player_t *player);
+void spawnLaser(gobj_t *player, gobj_t *laser);
+void updatePlayer(gobj_t *player, gobj_t *laser);
+void updateLaser(gobj_t *laser);
+void initPlayer(gobj_t *player);
+void drawPlayer(gobj_t *player);
 
 
 #endif

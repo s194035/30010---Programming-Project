@@ -1,6 +1,6 @@
 #include "updateships.h"
 
-void spawnLaser(player_t *player, player_t *laser){
+void spawnLaser(gobj_t *player, gobj_t *laser){
 
 int32_t spawnPx = player->x;
 int32_t spawnPy = player->y;
@@ -12,7 +12,7 @@ laser->speed = 1;
 
 }
 
-void updatePlayer(player_t *player, player_t *laser){
+void updatePlayer(gobj_t *player, gobj_t *laser){
 
     int32_t tempx = player->x;
     int32_t tempy = player->y;
@@ -45,7 +45,7 @@ void updatePlayer(player_t *player, player_t *laser){
     player->y = tempy;
 }
 
-void updateLaser(player_t *laser){
+void updateLaser(gobj_t *laser){
     int32_t tempx = laser->x;
     int32_t tempy = laser->y;
     int8_t tempspeed = laser->speed;
@@ -57,7 +57,7 @@ void updateLaser(player_t *laser){
     laser->x = tempx;
 }
 
-void initPlayer(player_t *player){
+void initPlayer(gobj_t *player){
 
     int8_t imgTemp[6][6] = {
     {219, 219, 219, 219, 219, 219},
@@ -77,7 +77,7 @@ void initPlayer(player_t *player){
 
 }
 
-void drawPlayer(player_t *player){
+void drawPlayer(gobj_t *player){
     int i;
     int j;
 
