@@ -4,48 +4,25 @@
 #include "ball.h"
 #include "ansi.h"
 #include "pin_io.h"
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
 #include "charset.h"
 #include "lcd.h"
 #include "time.h"
+#include "spaceShip.h"
 
-static uint16_t updateLCD;
-
-void TIM2_IRQHandler(void){
-
-    updateLCD++;
-    TIM2->SR &= ~0x0001; // Clear interrupt bit
-}
 
 int main(void)
 {
- uart_init( 115200 );
+    uart_init(115200);
+    lcd_init();
+
+    uint8_t *buffer[512];
+    memset(buffer, 0x00, 512);
+    lcd_face_six(buffer);
+    lcd_push_buffer(buffer);
 
 
 
- setupTimer();
- startTimer();
 
-    updateLCD = 0;
- uint8_t buffer[512];
- memset(buffer, 0x00, 512);
- lcd_init();
- lcd_write_string(buffer, "Goddag og jfdkslafdsafdasklfdjskal", 1, 1);
-
-
- while(1) {
-
-
-     if (updateLCD >= 100){
-         lcd_scroll_left(buffer);
-         lcd_update(buffer);
-         updateLCD = 0;
-     }
-
-
-     printf("%d\n",updateLCD);
-    }
+ while(1) {}
 }
 

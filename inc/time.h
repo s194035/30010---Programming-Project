@@ -6,7 +6,7 @@
 
 typedef struct {
 int hr, minute, sec, hundSec;
-} timestop_t;
+} timestop_t;void lcd_face_one(uint8_t *buffer);
 
 void resetTimer(timestop_t *timer, int timeCount);
 

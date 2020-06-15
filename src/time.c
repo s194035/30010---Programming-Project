@@ -7,7 +7,6 @@
 // timer code with interrupt function
 
 
-
 void resetTimer(timestop_t *timer, int timeCount){
     timer->hr = 0;
     timer->hundSec = 0;
