@@ -84,6 +84,17 @@ void underline(uint8_t on){
         printf("%c[24m", ESC);
 }
 
+// Makes title for game box.
+void title(int x, int y, char text []) {
+    gotoxy (x,y);
+    printf("%c", 185);
+    gotoxy(x+1,y);
+    printf("%s", text);
+    gotoxy ((x+strlen(text)+1),y);
+    printf ("%c", 204);
+
+}
+
 // Makes text blink in Putty terminal
 void blink(uint8_t on){
     printf("%c[%dm", ESC, (on == 1) ? 05 : 25);
