@@ -8,3 +8,5 @@
 *.depend
 *.map
 *.elf
+*.o
+*.o
