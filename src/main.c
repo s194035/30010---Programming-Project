@@ -39,6 +39,7 @@ int main(void)
     gobj_t laser;
 
     initPlayer(&player);
+    // initLaser(&laser);
     // Initialize timer
     setupTimer();
     startTimer();
@@ -48,13 +49,13 @@ int main(void)
         updatePlayer(&player, &laser);
         updateLaser(&laser);
 
-        if (checkCount >= MAX_COUNT){
+        //if (checkCount >= MAX_COUNT){
             clrscr();
             drawObj(&player);
-            //drawObj(&laser);
+            drawObj(&laser);
 
-            checkCount -= MAX_COUNT;
-        }
+            //checkCount -= MAX_COUNT;
+        //}
     }
 }
 
