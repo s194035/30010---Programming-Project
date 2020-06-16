@@ -24,7 +24,7 @@ void spawnLaser(gobj_t *player, gobj_t *laser);
 void updatePlayer(gobj_t *player, gobj_t *laser);
 void updateLaser(gobj_t *laser);
 void initPlayer(gobj_t *player);
-void drawPlayer(gobj_t *player);
+void drawObj(gobj_t *player);
 
 
 #endif

@@ -68,8 +68,8 @@ void initPlayer(gobj_t *player){
     {219,   0,   0,   0,   0, 219},
     };
 
-    player->x = 0;
-    player->y = 0;
+    player->x = 4;
+    player->y = 4;
     player->speed = 2;
 
     //copy over in struct:
@@ -77,7 +77,22 @@ void initPlayer(gobj_t *player){
 
 }
 
-void drawPlayer(gobj_t *player){
+void initLaser(gobj_t *laser){
+
+    int8_t imgTemp[6][6] = {
+    {0,   0, 219, 219,   0,   0},
+    {0,   0, 219, 219,   0,   0},
+    {0,   0, 219, 219,   0,   0},
+    {0,   0, 219, 219,   0,   0},
+    {0,   0, 219, 219,   0,   0},
+    {0,   0, 219, 219,   0,   0},
+    };
+
+    memcpy(laser->img, imgTemp, 6*6*sizeof(int8_t));
+
+}
+
+void drawObj(gobj_t *player){
     int i;
     int j;
 
@@ -85,12 +100,13 @@ void drawPlayer(gobj_t *player){
 
     for (i = 0; i < 6; i++){
         for (j = 0; j < 6; j++){
-            gotoxy(player->x + i, player->y + j);
-            printf("%c", player->img[i][j]);
+
+            if (player->img[i][j] != 0){
+                gotoxy(player->x + i, player->y + j);
+                printf("%c", player->img[i][j]);
+            }
         }
     }
-
-    printf("%c", 'y');
 }
 
 
