@@ -92,8 +92,8 @@ void initLaser(gobj_t *laser){
 
 void initEnemy(gobj_t *enemy){
 
-    enemy->x = 16;
-    enemy->y = 16;
+    enemy->x = 18;
+    enemy->y = 18;
     enemy->speed = 0;
     enemy->img = 0; // sets graphic
     enemy->active = 1; // sets active
@@ -105,7 +105,29 @@ void initEnemy(gobj_t *enemy){
     enemy->boxY2 = 5;
 }
 
-void drawPlayer(gobj_t *player){
+void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t img, uint8_t active,
+             uint8_t boxX1, uint8_t boxY1, uint8_t boxX2, uint8_t boxY2){
+
+    // start position and speed
+    obj->x = startx;
+    obj->y = starty;
+    obj->speed = speed;
+
+    // img
+    obj->img = img;
+
+    // active
+    obj->active = active;
+
+    // set bounding box
+    obj->boxX1 = boxX1;
+    obj->boxY1 = boxY1;
+    obj->boxX2 = boxX2;
+    obj->boxY2 = boxY2;
+
+}
+
+void drawObj(gobj_t *player){
     uint8_t i;
     uint8_t j;
 
@@ -115,8 +137,8 @@ void drawPlayer(gobj_t *player){
         // go to origin
         gotoxy(player->x, player->y);
 
-        for (i = 0; i < 6; i++){
-            for (j = 0; j < 6; j++){
+        for (i = 0; i < GRAPH_SIZE; i++){
+            for (j = 0; j < GRAPH_SIZE; j++){
 
                 // First index in sheet is the player image value
                 // the two others are for the 2d graphics
@@ -132,22 +154,23 @@ void drawPlayer(gobj_t *player){
 
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2){
 
-    // first we check for possible collision on x axis:
-    // First statement is corner on each side of box
-    // next two is each corner inside of box
-    if ( (obj1->boxX1 + obj1->x <= obj2->boxX1 + obj2->x && obj2->boxX2 + obj2->x <= obj1->boxX2 + obj1->x) ||
-         (obj2->boxX1 + obj2->x <= obj1->boxX1 + obj1->x && obj1->boxX1 + obj1->x <= obj2->boxX2 + obj2->x) ||
-         (obj2->boxX1 + obj2->x <= obj1->boxX2 + obj1->x && obj1->boxX2 + obj1->x <= obj2->boxX2 + obj2->x) ){
+    if (obj1->active && obj2->active){
+        // first we check for possible collision on x axis:
+        // First statement is corner on each side of box
+        // next two is each corner inside of box
+        if ( (obj1->boxX1 + obj1->x <= obj2->boxX1 + obj2->x && obj2->boxX2 + obj2->x <= obj1->boxX2 + obj1->x) ||
+             (obj2->boxX1 + obj2->x <= obj1->boxX1 + obj1->x && obj1->boxX1 + obj1->x <= obj2->boxX2 + obj2->x) ||
+             (obj2->boxX1 + obj2->x <= obj1->boxX2 + obj1->x && obj1->boxX2 + obj1->x <= obj2->boxX2 + obj2->x) ){
 
-        // Then we check for possible collision on y axis:
-        if ( (obj1->boxY1 + obj1->y <= obj2->boxY1 + obj2->y && obj2->boxY2 + obj2->y <= obj1->boxY2 + obj1->y) ||
-             (obj2->boxY1 + obj2->y <= obj1->boxY1 + obj1->y && obj1->boxY1 + obj1->y <= obj2->boxY2 + obj2->y) ||
-             (obj2->boxY1 + obj2->y <= obj1->boxY2 + obj1->y && obj1->boxY2 + obj1->y <= obj2->boxY2 + obj2->y) ){
+            // Then we check for possible collision on y axis:
+            if ( (obj1->boxY1 + obj1->y <= obj2->boxY1 + obj2->y && obj2->boxY2 + obj2->y <= obj1->boxY2 + obj1->y) ||
+                 (obj2->boxY1 + obj2->y <= obj1->boxY1 + obj1->y && obj1->boxY1 + obj1->y <= obj2->boxY2 + obj2->y) ||
+                 (obj2->boxY1 + obj2->y <= obj1->boxY2 + obj1->y && obj1->boxY2 + obj1->y <= obj2->boxY2 + obj2->y) ){
 
-                // there is a collision! Return true:
-                return(1);
+                    // there is a collision! Return true:
+                    return(1);
              }
-
+        }
     }
     // else return false:
     return(0);

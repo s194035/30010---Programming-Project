@@ -36,7 +36,10 @@ void updateLaser(gobj_t *laser);
 void initPlayer(gobj_t *player);
 void initLaser(gobj_t *laser);
 void initEnemy(gobj_t *enemy);
-void drawPlayer(gobj_t *player);
+void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t img, uint8_t active,
+             uint8_t boxX1, uint8_t boxY1, uint8_t boxX2, uint8_t boxY2);
+
+void drawObj(gobj_t *player);
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2);
 
 
