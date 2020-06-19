@@ -1,5 +1,12 @@
 #include "updateships.h"
 
+uint8_t boundaryCheck(uint8_t w, uint8_t h, uint8_t x, uint8_t y){
+
+    if (x < 1 || WIDTH - GRAPH_SIZE < x || y < 1 || HEIGHT - GRAPH_SIZE < y){
+            return 1; // graphics outside boundary
+    }
+    return 0; // else return 0
+}
 
 void spawnLaser(gobj_t *player, gobj_t *laser){
 
@@ -30,17 +37,26 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
 
     // x position
     if (controlChar == 'd'){
-            tempx += tempspeed;
+
+            if (!boundaryCheck(WIDTH, HEIGHT, tempx + tempspeed, tempy)){
+                tempx += tempspeed;
+            }
     }
     if (controlChar == 'a'){
+
+            if(!(boundaryCheck(WIDTH, HEIGHT, tempx - tempspeed, tempy)))
             tempx -= tempspeed;
     }
 
     // y position
     if (controlChar == 'w'){
+
+            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy - tempspeed))
             tempy -= tempspeed;
     }
     if (controlChar == 's'){
+
+            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy+tempspeed))
             tempy += tempspeed;
     }
 
@@ -48,7 +64,6 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
     if (controlChar == 'q'){
             spawnLaser(player, laser);
     }
-
     player->x = tempx;
     player->y = tempy;
 }
@@ -58,7 +73,14 @@ void updateLaser(gobj_t laser[]){
 
     for (i = 0; i < LASER_POOL; i++){
         if(laser[i].active){
+
+            // Checks if laser is out of bounds
+            if(!boundaryCheck(WIDTH, HEIGHT, laser[i].x, laser[i].y - laser[i].speed)) {
                 laser[i].y -= laser[i].speed;
+            } else {
+            // if its out of bounds, set it to inactive
+            laser[i].active = 0;
+            }
         }
     }
 }

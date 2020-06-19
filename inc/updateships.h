@@ -5,6 +5,9 @@
 #include "ansi.h"
 #include "graphicsSheet.h"
 
+#define WIDTH 168
+#define HEIGHT 44
+
 #define LASER_POOL 6 // amount of active shots on screen
 #define LASER_SPEED 1 // speed of laser
 
@@ -26,10 +29,10 @@ typedef struct {
     uint8_t boxY2;
 
 
-}
+} gobj_t;
 
-gobj_t;
 
+uint8_t boundaryCheck(uint8_t w, uint8_t h, uint8_t x, uint8_t y);
 void spawnLaser(gobj_t *player, gobj_t *laser);
 void updatePlayer(gobj_t *player, gobj_t *laser);
 void updateLaser(gobj_t *laser);
