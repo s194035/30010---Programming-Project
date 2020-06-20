@@ -11,7 +11,7 @@
 #define MAX_C_GRAPH 40
 #define MAX_C_UPDATERATE 20
 
-static uint32_t checkCount; //This counter will overflow after 44 hours! At that point, the gameloop breaks.
+static uint32_t checkCount = 0; //This counter will overflow after 44 hours! At that point, the gameloop breaks.
 
 void TIM2_IRQHandler(void){
 
@@ -22,7 +22,7 @@ void TIM2_IRQHandler(void){
 
 int main()
 {
-    // initialize everything
+    ///////////////////////////// initialize everything /////////////////////////////////
     uart_init(115200);
     uint8_t i;
     // variables to save a point in time.
@@ -32,25 +32,28 @@ int main()
     // Handles graphic drawing in the playfield
     uint8_t pfBuffer[WIDTH][HEIGHT];
     uint8_t pfUpdate[WIDTH][HEIGHT];
-
-    setupTimer();
-    startTimer();
-
-    gobj_t player;
-    gobj_t enemy;
-    gobj_t laser0, laser1, laser2, laser3, laser4, laser5;
-    gobj_t laserArray[LASER_POOL] = {laser0, laser1, laser2, laser3, laser4, laser5};
-
-    initObj(&player, 10, 10, 2, 0, 1, 1, 1, 5, 5); // initialize player. TODO: for the love of god, define par's as constants!
-    initObj(&enemy, 18, 18, 0, 0, 1, 1, 1, 5, 5); // test;
-
-    for (i = 0; i < LASER_POOL; i++){
-            initObj(&laserArray[i], 0, 0, 0, 1, 0, 2, 0, 3, 5); // initialize all lasers
-    }
     // reset playfield buffers - sets all chars to space (32), which clears playfield.
     memset(pfBuffer, 00, sizeof(pfBuffer));
     memset(pfUpdate, 32, sizeof(pfUpdate));
 
+    setupTimer();
+    startTimer();
+
+    // create a pool of gameobject structs for use in the game
+    gobj_t player;
+    gobj_t enemy0, enemy1, enemy2, enemy3, enemy4, enemy5;
+    gobj_t enemyArray[ENEMY_POOL] = {enemy0, enemy1, enemy2, enemy3, enemy4, enemy5};
+    gobj_t laser0, laser1, laser2, laser3, laser4, laser5;
+    gobj_t laserArray[LASER_POOL] = {laser0, laser1, laser2, laser3, laser4, laser5};
+
+    initObj(&player, WIDTH/2, HEIGHT/2, 1, 0, 1, 1, 1, 4, 4); // initialize player. TODO: for the love of god, define par's as constants!
+
+    for (i = 0; i < LASER_POOL; i++){
+            initObj(&laserArray[i], 0, 0, 0, 1, 0, 2, 0, 3, 4); // initialize all lasers
+    }
+    for (i = 0; i < ENEMY_POOL; i++){
+            initObj(&enemyArray[i], 0, 0, 0, 2, 0, 1, 1, 4, 4); // initialize all lasers
+    }
 
     ///////////// Game loop //////////////
 
@@ -62,8 +65,11 @@ int main()
         // Timer to update logic
         if ((checkCount - midTime1) > MAX_C_UPDATERATE){
 
+            enemyHandler(enemyArray);
+
             updatePlayer(&player, laserArray);
             updateLaser(laserArray);
+            updateEnemy(enemyArray);
 
             //sets new relative point
             midTime1 = checkCount;
@@ -74,6 +80,7 @@ int main()
 
             // draw lasers and player
             writeToUpdateBuffer(&player,pfUpdate);
+            writeToUpdateBuffer(&enemyArray[0], pfUpdate);
 
             for (i = 0; i < (LASER_POOL); i++){
                 writeToUpdateBuffer(&laserArray[i], pfUpdate);

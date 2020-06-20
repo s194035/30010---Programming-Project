@@ -75,59 +75,14 @@ void updateLaser(gobj_t laser[]){
         if(laser[i].active){
 
             // Checks if laser is out of bounds
-            if(!boundaryCheck(WIDTH, HEIGHT, laser[i].x, laser[i].y - laser[i].speed)) {
-                laser[i].y -= laser[i].speed;
+            if(!boundaryCheck(WIDTH, HEIGHT, laser[i].x, laser[i].y + laser[i].speed)) {
+                laser[i].y += laser[i].speed;
             } else {
             // if its out of bounds, set it to inactive
             laser[i].active = 0;
             }
         }
     }
-}
-
-// all these inits should be one function!
-// Delete these old init functions
-void initPlayer(gobj_t *player){
-
-    player->x = 10;
-    player->y = 10;
-    player->speed = 2;
-    player->img = 0; // sets graphic
-    player->active = 1; // sets active
-
-    // sets collision box
-    player->boxX1 = 1;
-    player->boxY1 = 1;
-    player->boxX2 = 5;
-    player->boxY2 = 5;
-
-}
-
-// delete this
-void initLaser(gobj_t *laser){
-
-    laser->x = 0;
-    laser->y = 0;
-    laser->speed = 0;
-    laser->img = 1; // sets graphic.
-    laser->active = 0; // sets active
-
-}
-
-// and this
-void initEnemy(gobj_t *enemy){
-
-    enemy->x = 18;
-    enemy->y = 18;
-    enemy->speed = 0;
-    enemy->img = 0; // sets graphic
-    enemy->active = 1; // sets active
-
-    // sets collision box
-    enemy->boxX1 = 1;
-    enemy->boxY1 = 1;
-    enemy->boxX2 = 5;
-    enemy->boxY2 = 5;
 }
 
 // general
@@ -233,7 +188,6 @@ void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HE
     }
 }
 
-
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2){
 
     if (obj1->active && obj2->active){
@@ -256,5 +210,28 @@ uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2){
     }
     // else return false:
     return(0);
+}
+
+void updateEnemy(gobj_t enemy[]){
+    uint8_t i;
+
+    for (i = 0; i < ENEMY_POOL; i++){
+        if(enemy[i].active){
+
+            // Checks if laser is out of bounds
+            if(!boundaryCheck(WIDTH, HEIGHT, enemy[i].x, enemy[i].y + enemy[i].speed)) {
+                enemy[i].y += enemy[i].speed;
+            } else {
+            // if its out of bounds, set it to inactive
+            enemy[i].active = 0;
+            }
+        }
+    }
+}
+
+void enemyHandler(gobj_t enemy[]){
+    if (!(enemy[0].active)){
+            initObj(&enemy[0], 10, 2, 1, 2, 1, 1, 1, 4, 4);
+    }
 }
 
