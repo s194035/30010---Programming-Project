@@ -2,7 +2,7 @@
 
 uint8_t boundaryCheck(uint8_t w, uint8_t h, uint8_t x, uint8_t y){
 
-    if (x < 1 || WIDTH - GRAPH_SIZE < x || y < 1 || HEIGHT - GRAPH_SIZE < y){
+    if (x < 0 || WIDTH - GRAPH_SIZE < x || y < 0 || HEIGHT - GRAPH_SIZE < y){
             return 1; // graphics outside boundary
     }
     return 0; // else return 0
@@ -86,6 +86,7 @@ void updateLaser(gobj_t laser[]){
 }
 
 // all these inits should be one function!
+// Delete these old init functions
 void initPlayer(gobj_t *player){
 
     player->x = 10;
@@ -102,6 +103,7 @@ void initPlayer(gobj_t *player){
 
 }
 
+// delete this
 void initLaser(gobj_t *laser){
 
     laser->x = 0;
@@ -112,6 +114,7 @@ void initLaser(gobj_t *laser){
 
 }
 
+// and this
 void initEnemy(gobj_t *enemy){
 
     enemy->x = 18;
@@ -127,6 +130,7 @@ void initEnemy(gobj_t *enemy){
     enemy->boxY2 = 5;
 }
 
+// general
 void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t img, uint8_t active,
              uint8_t boxX1, uint8_t boxY1, uint8_t boxX2, uint8_t boxY2){
 
@@ -149,6 +153,7 @@ void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t 
 
 }
 
+// Old draw code - maybe useful somewhere else? Main game loop uses new code
 void drawObj(gobj_t *player){
     uint8_t i;
     uint8_t j;
@@ -173,6 +178,61 @@ void drawObj(gobj_t *player){
         //gotoxy(3,3); // removes tail.
     }
 }
+
+void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH][HEIGHT]){
+   uint8_t i;
+   uint8_t j;
+
+    // Should be called every time we update the logic
+    // The contents of this buffer is what we want to draw to screen (or the "playfield").
+    // We update it with graphics from the sheet relative to structs placement on the playfield
+    // If the struct somehow moves outside the playfield, ugly things will happen!
+    // TODO: (Maybe make security checks then?)
+
+    if (obj->active){
+
+        for (i = 0; i < GRAPH_SIZE; i++){
+            for (j = 0; j < GRAPH_SIZE; j++){
+
+                // First index in sheet is the player image value
+                // the two others are for the 2d graphics
+                if (graph[obj->img][j][i] != 0){
+
+                    // The graphics in the graphicssheet is rotated by 90 degrees
+                    // Thats why we rotate it back by switching i and j
+                    upBuffer[i + obj->x][j + obj->y] = graph[obj->img][j][i];
+                }
+            }
+        }
+    }
+}
+
+void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HEIGHT]){
+
+   uint8_t i;
+   uint8_t j;
+    // Should only be called when drawing graphics!
+    //We compare what we want to draw to the screen/playfield (upBuffer) with what is already
+    //drawn to the screen (scrBuffer). If there is a difference, then call gotoxy and update scrBuffer
+    //with contents of upBuffer
+
+    for (i = 0; i < WIDTH; i++){
+            for (j = 0; j < HEIGHT; j++){
+
+                // Compares if there is a difference
+                if(!(upBuffer[i][j] == scrBuffer[i][j])){
+                        // If yes, then draw.
+                        //I have added a offset to Gotoxy to control where on screen
+                        //we want to draw the playfield.
+                        gotoxy(i + 8, j + 8);
+                        printf("%c", upBuffer[i][j]);
+                        // Update scrBuffer:
+                        scrBuffer[i][j] = upBuffer[i][j];
+                }
+            }
+    }
+}
+
 
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2){
 

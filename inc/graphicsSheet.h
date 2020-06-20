@@ -2,8 +2,8 @@
 #define GRAPHICS_H
 #include "30010_io.h"
 
-#define GRAPH_SIZE 6
+#define GRAPH_SIZE 5
 // graphics sheet for use elsewhere //
-extern const uint8_t graph[2][GRAPH_SIZE][GRAPH_SIZE];
+extern const uint8_t graph[16][GRAPH_SIZE][GRAPH_SIZE];
 
 #endif
