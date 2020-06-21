@@ -3,8 +3,9 @@
 
 #include "ansi.h"
 #include "30010_io.h"
+#include "updateships.h"
 
-void mainMenu(gobj_t *player, gobj_t *laser);
+uint8_t mainMenu(gobj_t *player, gobj_t *laser);
 void printMainMenu();
 void printHelp();
 void printHighScore();
