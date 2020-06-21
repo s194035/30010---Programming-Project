@@ -25,6 +25,7 @@ int main()
     ///////////////////////////// initialize everything /////////////////////////////////
     uart_init(115200);
     uint8_t i;
+    uint8_t j;
     // variables to save a point in time.
     uint32_t midTime1 = 0;
     uint32_t midTime2 = 0;
@@ -67,9 +68,21 @@ int main()
 
             enemyHandler(enemyArray);
 
+            //updates all gameobjects:
             updatePlayer(&player, laserArray);
             updateLaser(laserArray);
             updateEnemy(enemyArray);
+            // check for collision:
+
+
+            for (i=0; i < LASER_POOL; i++){
+                for (j=0; j < ENEMY_POOL; j++){
+                    if (checkCollision(&laserArray[i], &enemyArray[j])){
+                        enemyArray[j].active = 0;
+                        laserArray[i].active = 0;
+                    }
+                }
+            }
 
             //sets new relative point
             midTime1 = checkCount;
@@ -78,14 +91,27 @@ int main()
         // timer to update graphics
         if (checkCount - midTime2 > MAX_C_GRAPH){
 
-            // draw lasers and player
-            writeToUpdateBuffer(&player,pfUpdate);
-            writeToUpdateBuffer(&enemyArray[0], pfUpdate);
+            // draw bg:
+            // maybe put all these into its own function or macro - they take up a lot of space
+            writeBgToBuffer(13, 0, 0, 2, pfUpdate);
+            writeBgToBuffer(13, 5, 0, 3, pfUpdate);
+            writeBgToBuffer(13, 10, 0, 0, pfUpdate);
+            writeBgToBuffer(14, 0, 5, 0, pfUpdate);
+            writeBgToBuffer(13, 5, 5, 1, pfUpdate);
+            writeBgToBuffer(13, 10, 5, 3, pfUpdate);
+            writeBgToBuffer(15, 15, 5, 3, pfUpdate);
+            writeBgToBuffer(12, 30, 30, 0, pfUpdate);
 
+            // draw player
+            writeToUpdateBuffer(&player,pfUpdate);
+            // draw enemies
+            for (i = 0; i < (ENEMY_POOL); i++){
+                writeToUpdateBuffer(&enemyArray[i], pfUpdate);
+            }
+            // draw lasers
             for (i = 0; i < (LASER_POOL); i++){
                 writeToUpdateBuffer(&laserArray[i], pfUpdate);
             }
-
             // draw contents of buffer
             drawFromBuffer(pfUpdate, pfBuffer);
             // Finally, reset the updateBuffer

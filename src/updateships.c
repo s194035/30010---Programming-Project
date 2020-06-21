@@ -66,6 +66,9 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
     }
     player->x = tempx;
     player->y = tempy;
+
+    // clear input buffer to avoid sticky inputs
+    uart_clear();
 }
 
 void updateLaser(gobj_t laser[]){
@@ -162,6 +165,68 @@ void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH][HEIGHT]){
     }
 }
 
+void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t upBuffer[WIDTH][HEIGHT]){
+   int8_t i;
+   int8_t j;
+
+    // general way of drawing static graphic such as the background
+    // supports flipping the image
+    // flip = 0: normal, flip = 1: flip on x-axis, flip = 2: flip on y-axis, flip = 3: flipped on both axis.
+
+    if (flip == 0){
+
+        for (i = 0; i < GRAPH_SIZE; i++){
+            for (j = 0; j < GRAPH_SIZE; j++){
+
+                if (graph[img][j][i] != 0){
+
+                    upBuffer[i + x][j + y] = graph[img][j][i];
+                }
+            }
+        }
+        return;
+    }
+    if (flip == 1){
+
+        for (i = 0; i < GRAPH_SIZE; i++){
+            for (j = 0; j < GRAPH_SIZE; j++){
+
+                if (graph[img][j][GRAPH_SIZE - 1 - i] != 0){
+
+                    upBuffer[i + x][j + y] = graph[img][j][GRAPH_SIZE - 1 - i];
+                }
+            }
+        }
+        return;
+    }
+    if (flip == 2){
+
+        for (i = 0; i < GRAPH_SIZE; i++){
+            for (j = 0; j < GRAPH_SIZE; j++){
+
+                if (graph[img][GRAPH_SIZE - 1 - j][i] != 0){
+
+                    upBuffer[i + x][j + y] = graph[img][GRAPH_SIZE - 1 - j][i];
+                }
+            }
+        }
+        return;
+    }
+    if (flip == 3){
+
+        for (i = 0; i < GRAPH_SIZE; i++){
+            for (j = 0; j < GRAPH_SIZE; j++){
+
+                if (graph[img][i][j] != 0){
+
+                    upBuffer[i + x][j + y] = graph[img][i][j];
+                }
+            }
+        }
+        return;
+    }
+}
+
 void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HEIGHT]){
 
    uint8_t i;
@@ -179,7 +244,11 @@ void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HE
                         // If yes, then draw.
                         //I have added a offset to Gotoxy to control where on screen
                         //we want to draw the playfield.
-                        gotoxy(i + 8, j + 8);
+
+                        // read the last four bits
+                       // fgcolor((upBuffer[i][j] & 0xf0) >> 4);
+
+                        gotoxy(i + PF_OFF_X, j + PF_OFF_Y);
                         printf("%c", upBuffer[i][j]);
                         // Update scrBuffer:
                         scrBuffer[i][j] = upBuffer[i][j];
@@ -230,8 +299,14 @@ void updateEnemy(gobj_t enemy[]){
 }
 
 void enemyHandler(gobj_t enemy[]){
-    if (!(enemy[0].active)){
-            initObj(&enemy[0], 10, 2, 1, 2, 1, 1, 1, 4, 4);
+    static uint8_t timer = 0;
+    uint8_t i;
+
+    for(i=0; i < ENEMY_POOL; i++){
+        if (!(enemy[i].active) && timer % i == 0){
+            initObj(&enemy[i], 10 + i*2, 2, 1, 2, 1, 1, 1, 4, 4);
+            break;
+        }
+    timer++;
     }
 }
-
