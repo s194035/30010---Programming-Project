@@ -1,12 +1,12 @@
-
 #include "updateships.h"
+#include "pin_io.h"
 
 #define WIDTH 168
 #define HEIGHT 44
 
 uint8_t boundaryCheck(uint8_t w, uint8_t h, uint8_t x, uint8_t y){
 
-    if (x < 1 || WIDTH - GRAPH_SIZE < x || y < 1 || HEIGHT - GRAPH_SIZE < y){
+    if (x < 1 || WIDTH - GRAPH_SIZE < x || y < 2 || HEIGHT - GRAPH_SIZE-1 < y){
             return 1; // graphics outside boundary
     }
     return 0; // else return 0
@@ -31,7 +31,7 @@ uint8_t i;
     // if all lasers are active, then don't shoot any
 }
 
-void updatePlayer(gobj_t *player, gobj_t laser[]){
+void updatePlayer(gobj_t *player, gobj_t *laser){
 
     // TODO: split this function up in a inputmanager() and a playerupdate()
 
@@ -46,29 +46,43 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
 
             if (!boundaryCheck(WIDTH, HEIGHT, tempx + tempspeed, tempy)){
                 tempx += tempspeed;
+                        setLed(0,0,0);
+                        LedPinSetup(9,'A',0);
             }
     }
     if (controlChar == 'a'){
 
-            if(!(boundaryCheck(WIDTH, HEIGHT, tempx - tempspeed, tempy)))
+            if(!(boundaryCheck(WIDTH, HEIGHT, tempx - tempspeed, tempy))){
             tempx -= tempspeed;
+            setLed(0,0,0);
+            LedPinSetup(7,'C',0);
+            }
     }
 
     // y position
     if (controlChar == 'w'){
 
-            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy - tempspeed))
+            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy - tempspeed)){
             tempy -= tempspeed;
+            setLed(0,0,0);
+            LedPinSetup(4,'B',0);
+            }
     }
+
     if (controlChar == 's'){
 
-            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy+tempspeed))
+            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy+tempspeed)){
             tempy += tempspeed;
+            setLed(0,0,0);
+            LedPinSetup(7,'C',0);
+            LedPinSetup(4,'B',0);
+            }
     }
 
     // shoot
     if (controlChar == 'q'){
             spawnLaser(player, laser);
+
     }
     player->x = tempx;
     player->y = tempy;
@@ -117,7 +131,7 @@ void initEnemy(gobj_t *enemy){
     enemy->x = 16;
     enemy->y = 16;
     enemy->speed = 0;
-    enemy->img = 0; // sets graphic
+    enemy->img = 2; // sets graphic
     enemy->active = 1; // sets active
 
     // sets collision box
@@ -152,6 +166,24 @@ void drawPlayer(gobj_t *player){
     }
 }
 
+void drawEnemy(gobj_t *enemy){
+    uint8_t i;
+    uint8_t j;
+
+    if(enemy->active){
+        gotoxy(enemy->x, enemy->y);
+
+        for(i = 0; i<6; i++){
+            for(j = 0; j < 6; j++){
+                if(graph[enemy->img][j][i] !=0){
+                    gotoxy(enemy->x + i, enemy->y + j);
+                    printf("%c", graph[enemy->img][j][i]);
+                }
+            }
+        }
+    }
+}
+
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2){
 
     // first we check for possible collision on x axis:
@@ -174,4 +206,3 @@ uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2){
     // else return false:
     return(0);
 }
-
