@@ -21,10 +21,7 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
         // Cursor is on Play Game
         if(startPoint == 0){
             if(controlChar == 's'){
-                gotoxy(95,13);
-                printf("%c",32);
-                gotoxy(95,15);
-                printf("O");
+                moveCursorDown(95,13);
                 startPoint = 1;
             }
              else if(controlChar == 13){
@@ -41,20 +38,14 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
             if(menuPoint == 1){
                 if(controlChar == 's'){
                     startPoint = 6;
-                    gotoxy(95,13);
-                    printf("%c",32);
-                    gotoxy(95,15);
-                    printf("O");
+                    moveCursorDown(95,13);
                     menuPoint = 2;
                     }
             }
             if(menuPoint == 2){
                 if(controlChar == 'w'){
                     startPoint = 6;
-                    gotoxy(95,15);
-                    printf("%c",32);
-                    gotoxy(95,13);
-                    printf("O");
+                    moveCursorUp(95,15);
                     menuPoint = 1;
                 }
             }
@@ -68,17 +59,11 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
         // Cursor is on High Score
         if(startPoint == 1){
             if(controlChar == 'w'){
-                gotoxy(95,15);
-                printf("%c",32);
-                gotoxy(95,13);
-                printf("O");
+                moveCursorUp(95,15);
                 startPoint = 0;
             }
             else if(controlChar == 's'){
-                gotoxy(95,15);
-                printf("%c",32);
-                gotoxy(95,17);
-                printf("O");
+                moveCursorDown(95,15);
                 startPoint = 2;
             }
             else if(controlChar == 13){
@@ -91,24 +76,18 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
         // Cursor is on Settings
         if(startPoint == 2){
             if(controlChar == 'w'){
-                gotoxy(95,17);
-                printf("%c",32);
-                gotoxy(95,15);
-                printf("O");
+                moveCursorUp(95,17);
                 startPoint = 1;
             }
             if(controlChar == 's'){
-                gotoxy(95,17);
-                printf("%c",32);
-                gotoxy(95,19);
-                printf("O");
+                moveCursorDown(95,17);
                 startPoint = 3;
             }
 
             else if(controlChar == 13){
                 box(WIDTH, HEIGHT);
                 settingsPoint = 1;
-                startPoint = 6;
+                startPoint = 4;
                 printSettings();
                 gotoxy(95,13);
                 printf("O");
@@ -116,48 +95,37 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
             controlChar = 0;
         }
 
-        if(settingsPoint == 1){
+        if(settingsPoint == 1 && startPoint == 4){
             if(controlChar == 's'){
-                startPoint = 6;
+                startPoint = 4;
                 difficultyPoint = 2;
-                gotoxy(95,13);
-                printf("%c",32);
-                gotoxy(95,15);
-                printf("O");
+                moveCursorDown(95,13);
                 settingsPoint = 2;
+                controlChar = 0;
             }
         }
 
-        if(settingsPoint == 2){
+        if(settingsPoint == 2 && startPoint == 4){
             if(controlChar == 'w'){
-                startPoint = 6;
-                difficultyPoint = 1;
-                gotoxy(95,15);
-                printf("%c",32);
-                gotoxy(95,13);
-                printf("O");
+                startPoint = 4;
+                moveCursorUp(95,15);
                 settingsPoint = 1;
             }
             else if(controlChar == 's'){
-                startPoint = 6;
+                startPoint = 4;
                 difficultyPoint = 3;
-                gotoxy(95,15);
-                printf("%c",32);
-                gotoxy(95,17);
-                printf("O");
+                moveCursorDown(95,15);
                 settingsPoint = 3;
             }
         }
 
-        if(settingsPoint == 3){
+        if(settingsPoint == 3 && startPoint == 4){
             if(controlChar == 'w'){
-                startPoint = 6;
+                startPoint = 4;
                 difficultyPoint = 2;
-                gotoxy(95,17);
-                printf("%c",32);
-                gotoxy(95,15);
-                printf("O");
+                moveCursorUp(95,17);
                 settingsPoint = 2;
+                controlChar = 0;
             }
         }
 
@@ -165,10 +133,7 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
         // Cursor is on Help
         if(startPoint == 3){
             if(controlChar == 'w'){
-                gotoxy(95,19);
-                printf("%c",32);
-                gotoxy(95,17);
-                printf("O");
+                moveCursorUp(95,19);
                 startPoint = 2;
             }
 
@@ -188,7 +153,31 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
             }
             controlChar = 0;
         }
+
+        if(startPoint == 4){
+            gotoxy(95,40);
+            printf("Press Enter to select difficulty");
+            if(controlChar == 13){
+                printMainMenu();
+                startPoint = 0;
+            }
+            controlChar = 0;
+        }
     }
+}
+
+void moveCursorDown(uint8_t x0, uint8_t y0){
+    gotoxy(x0,y0);
+    printf("%c",32);
+    gotoxy(x0,y0+2);
+    printf("O");
+}
+
+void moveCursorUp(uint8_t x0, uint8_t y0){
+    gotoxy(x0,y0);
+    printf("%c",32);
+    gotoxy(x0,y0-2);
+    printf("O");
 }
 
 void printMainMenu(){
