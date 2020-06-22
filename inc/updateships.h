@@ -6,10 +6,28 @@
 #include "graphicsSheet.h"
 #include "pin_io.h"
 
+// general
+#define SET_ACTIVE 1
+#define SET_INACTIVE 0
+
+// Laser constants
 #define LASER_POOL 6 // amount of active shots on screen
 #define LASER_SPEED -1 // speed of laser
+#define LASER_BBOX_x1 1
+#define LASER_BBOX_Y1 0
+#define LASER_BBOX_X2 4
+#define LASER_BBOX_Y2 5
 
+// player constants
+#define PLAYER_BBOX_XY1 1 // x and y coordinates for bbox
+#define PLAYER_BBOX_XY2 4 // x and y coordinates for bbox
+#define PLAYER_SPEED 1
+
+// enemy constants
 #define ENEMY_POOL 16 // amount of enemies on screen
+#define ENEMY_BBOX_XY1 1 // x and y coordinates for bbox
+#define ENEMY_BBOX_XY2 4 // x and y coordinates for bbox
+#define ENEMY_SPEED 1 // speed of enemy
 
 // Playfield constants
 #define WIDTH_PF 50 // width of playfield
@@ -46,7 +64,6 @@ void updateLaser(gobj_t *laser);
 void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t img, uint8_t active,
              uint8_t boxX1, uint8_t boxY1, uint8_t boxX2, uint8_t boxY2);
 
-void drawObj(gobj_t *player);
 void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]);
 void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]);
 void drawBackground(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]);

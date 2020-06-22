@@ -47,7 +47,7 @@ void lcd_scroll_left(uint8_t *buffer){
 void lcd_health_bar_zero(uint8_t *buffer){
     char filledHeart[] = {127, '\0'};
     char emptyHeart[] = {128, '\0'};
-    memset(buffer, 0x00, 512);
+    //memset(buffer, 0x00, 512);
     lcd_write_string(buffer, emptyHeart,0,0);
     lcd_write_string(buffer, emptyHeart,6,0);
     lcd_write_string(buffer, emptyHeart,12,0);
@@ -58,7 +58,7 @@ void lcd_health_bar_zero(uint8_t *buffer){
 void lcd_health_bar_one(uint8_t *buffer){
     char filledHeart[] = {127, '\0'};
     char emptyHeart[] = {128, '\0'};
-    memset(buffer, 0x00, 512);
+    //memset(buffer, 0x00, 512);
     lcd_write_string(buffer, filledHeart,0,0);
     lcd_write_string(buffer, emptyHeart,6,0);
     lcd_write_string(buffer, emptyHeart,12,0);
@@ -69,7 +69,7 @@ void lcd_health_bar_one(uint8_t *buffer){
 void lcd_health_bar_two(uint8_t *buffer){
     char filledHeart[] = {127, '\0'};
     char emptyHeart[] = {128, '\0'};
-    memset(buffer, 0x00, 512);
+    //memset(buffer, 0x00, 512);
     lcd_write_string(buffer, filledHeart,0,0);
     lcd_write_string(buffer, filledHeart,6,0);
     lcd_write_string(buffer, emptyHeart,12,0);
@@ -80,7 +80,7 @@ void lcd_health_bar_two(uint8_t *buffer){
 void lcd_health_bar_three(uint8_t *buffer){
     char filledHeart[] = {127, '\0'};
     char emptyHeart[] = {128, '\0'};
-    memset(buffer, 0x00, 512);
+    //memset(buffer, 0x00, 512);
     lcd_write_string(buffer, filledHeart,0,0);
     lcd_write_string(buffer, filledHeart,6,0);
     lcd_write_string(buffer, filledHeart,12,0);
@@ -91,7 +91,7 @@ void lcd_health_bar_three(uint8_t *buffer){
 void lcd_health_bar_four(uint8_t *buffer){
     char filledHeart[] = {127, '\0'};
     char emptyHeart[] = {128, '\0'};
-    memset(buffer, 0x00, 512);
+    //memset(buffer, 0x00, 512);
     lcd_write_string(buffer, filledHeart,0,0);
     lcd_write_string(buffer, filledHeart,6,0);
     lcd_write_string(buffer, filledHeart,12,0);
@@ -102,7 +102,7 @@ void lcd_health_bar_four(uint8_t *buffer){
 void lcd_health_bar_five(uint8_t *buffer){
     char filledHeart[] = {127, '\0'};
     char emptyHeart[] = {128, '\0'};
-    memset(buffer, 0x00, 512);
+    //memset(buffer, 0x00, 512);
     lcd_write_string(buffer, filledHeart,0,0);
     lcd_write_string(buffer, filledHeart,6,0);
     lcd_write_string(buffer, filledHeart,12,0);
@@ -279,22 +279,77 @@ void lcd_face_six(uint8_t *buffer){
     lcd_write_string(buffer, rightChin, 118, 2);
 }
 
+void lcd_face_anim(uint8_t setface, uint8_t *faceAnim, uint8_t *faceCount){
+
+    // if face are set to either happy or angry, then set the index and run the counter
+    if (setface == 1){
+        *faceAnim = 3;
+        *faceCount = 0;
+    }
+    if (setface == 2){
+        *faceAnim = 2;
+        *faceCount = 0;
+    }
+
+    // if the happy/angryface cooldown runs down, the reset back to idle:
+    if (*faceAnim <= 50 && (*faceAnim == 3 || *faceAnim == 4)){
+        *faceAnim = 0; // go back to idle
+        *faceCount = 0; // reset counter
+    }
+    // if the face is neither happy nor angry, then run the standard animation:
+    if (setface == 0 && !(*faceAnim == 3) && !(*faceAnim == 4)){
+
+        //choose face based on facecount:
+        *faceAnim = 0;
+        if (*faceCount >= 40){
+            *faceAnim = 1;
+        }
+        if (*faceCount >= 60){
+            *faceAnim = 0;
+        }
+        if (*faceCount >= 100){
+            *faceAnim = 2;
+        }
+        if (*faceCount >= 120){
+            *faceCount = 0;
+        }
+    }
+}
+
 void lcd_controller(uint8_t *buffer, uint8_t lives, uint8_t face){
 
-    if(face == 0){
-        lcd_face_one(buffer);
-    }
-    if(face == 1){
-        lcd_face_four(buffer);
+    // draw face
+    switch(face){
+        case 0:
+            // normal face looking straight
+            lcd_face_one(buffer);
+            break;
+
+        case 1:
+            //normal face looking right
+            lcd_face_two(buffer);
+            break;
+
+        case 2:
+            //normal face looking left
+            lcd_face_three(buffer);
+            break;
+
+        case 3:
+            //angry face
+            lcd_face_four(buffer);
+            break;
+        case 4:
+            //happy face
+            lcd_face_five(buffer);
+            break;
     }
 
-    if(face == 2){
-        lcd_face_five(buffer);
-    }
 
+    // draw healthbar
     if(lives == 0){
         lcd_health_bar_zero(buffer);
-        lcd_face_six(buffer);
+        lcd_face_five(buffer); // override face if health is zero
     }
 
     if(lives == 1){
@@ -306,7 +361,7 @@ void lcd_controller(uint8_t *buffer, uint8_t lives, uint8_t face){
     }
 
     if(lives == 3){
-    lcd_health_bar_three(buffer);
+        lcd_health_bar_three(buffer);
     }
 
     if(lives == 4){
@@ -314,7 +369,7 @@ void lcd_controller(uint8_t *buffer, uint8_t lives, uint8_t face){
     }
 
     if(lives == 5){
-        lcd_health_bar_five(buffer);
+    lcd_health_bar_five(buffer);
     }
     lcd_push_buffer(buffer);
 }

@@ -16,6 +16,7 @@ int main()
     uart_init(115200);
     ioConfig();
     ledsetup();
+    lcd_init();
     // temp variable
     uint8_t settings;
     uint16_t highScore[10] = {0,0,0,0,0,0,0,0,0,0};

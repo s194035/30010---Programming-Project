@@ -15,7 +15,7 @@
 #define MAX_C_UPDATERATE 20
 
 // global variable
-uint32_t checkCount; //This counter will overflow after 44 hours! At that point, the gameloop breaks.
+static uint32_t checkCount; //This counter will overflow after 44 hours! At that point, the gameloop breaks.
 
 void TIM2_IRQHandler(void);
 void gameLoop(uint8_t settings);

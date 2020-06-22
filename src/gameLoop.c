@@ -1,6 +1,6 @@
 #include "gameLoop.h"
 
-uint32_t checkCount = 0;
+//static uint32_t checkCount = 0;
 
 //Interrupt handler
 void TIM2_IRQHandler(void){
@@ -27,6 +27,14 @@ void gameLoop(uint8_t settings){
     memset(pfBuffer, 00, sizeof(pfBuffer));
     memset(pfUpdate, 32, sizeof(pfUpdate));
 
+    // Setup LCD
+    uint8_t LCDbuffer[512];
+    memset(LCDbuffer, 0x00, 512);
+    // control the LCD face
+    uint8_t faceAnim = 0; // face animation to play
+    uint8_t faceCount = 0; // timer to keep count of face animation
+
+    // setup interrupts
     setupTimer();
     startTimer();
 
@@ -39,20 +47,20 @@ void gameLoop(uint8_t settings){
     gobj_t laser0, laser1, laser2, laser3, laser4, laser5;
     gobj_t laserArray[LASER_POOL] = {laser0, laser1, laser2, laser3, laser4, laser5};
 
-    initObj(&player, WIDTH_PF/2, HEIGHT_PF/2, 1, 0, 1, 1, 1, 4, 4); // initialize player. TODO: for the love of god, define par's as constants!
+    // initialize all the gameobjects
+    initObj(&player, WIDTH_PF/2, HEIGHT_PF-8, PLAYER_SPEED, 0, SET_ACTIVE, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2); // initialize player.
 
     for (i = 0; i < LASER_POOL; i++){
-            initObj(&laserArray[i], 0, 0, 0, 1, 0, 2, 0, 3, 4); // initialize all lasers
+            initObj(&laserArray[i], 0, 0, 0, 1, SET_INACTIVE, LASER_BBOX_x1, LASER_BBOX_X2, LASER_BBOX_Y1, LASER_BBOX_Y2); // initialize all lasers
     }
     for (i = 0; i < ENEMY_POOL; i++){
-            initObj(&enemyArray[i], 0, 0, 0, 2, 0, 1, 1, 4, 4); // initialize all lasers
+            initObj(&enemyArray[i], 0, 0, 0, 2, SET_INACTIVE, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2); // initialize all enemies
     }
 
-    ////////////////////////////////////////// Game loop ///////////////////////////////////////////////
-
-    //draw border
+     //draw border
     box2(PF_OFF_X-1, PF_OFF_Y-1, PF_OFF_X + WIDTH_PF, PF_OFF_Y + HEIGHT_PF);
 
+    ////////////////////////////////////////// Game loop ///////////////////////////////////////////////
     while(1){
 
         // Timer to update logic
@@ -64,9 +72,8 @@ void gameLoop(uint8_t settings){
             updatePlayer(&player, laserArray);
             updateLaser(laserArray);
             updateEnemy(enemyArray);
+
             // check for collision:
-
-
             for (i=0; i < LASER_POOL; i++){
                 for (j=0; j < ENEMY_POOL; j++){
                     if (checkCollision(&laserArray[i], &enemyArray[j])){
@@ -99,7 +106,10 @@ void gameLoop(uint8_t settings){
             drawFromBuffer(pfUpdate, pfBuffer);
             // Finally, reset the updateBuffer
             memset(pfUpdate, 32, sizeof(pfUpdate));
-
+            // update LCD screen
+            lcd_face_anim(0, &faceAnim, &faceCount);
+            lcd_controller(LCDbuffer, 1, faceAnim);
+            faceCount++;
             //Sets new relative point
             midTime2 = checkCount;
         }

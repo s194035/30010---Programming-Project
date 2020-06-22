@@ -31,6 +31,6 @@ void box(uint8_t width, uint8_t height);
 
 void box2(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
-void window(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, char text[], char style);
+//void window(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, char text[], char style);
 
 #endif // ANSI_H

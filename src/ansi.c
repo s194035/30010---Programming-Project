@@ -166,6 +166,7 @@ void box2(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
     }
 }
 // This functions draws a window with a title and 2 different styles.
+/*
 void window(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, char text[], char style){
     int i;
     inverse(0);
@@ -242,3 +243,4 @@ void window(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, char text[], char st
     inverse(0);
     gotoxy(x2+1,y2+1);
 }
+*/

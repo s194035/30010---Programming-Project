@@ -23,4 +23,6 @@ void lcd_health_bar_two(uint8_t *buffer);
 void lcd_health_bar_three(uint8_t *buffer);
 void lcd_health_bar_four(uint8_t *buffer);
 void lcd_health_bar_five(uint8_t *buffer);
+void lcd_controller(uint8_t *buffer, uint8_t lives, uint8_t face);
+void lcd_face_anim(uint8_t setface, uint8_t *faceAnim, uint8_t *faceCount);
 #endif

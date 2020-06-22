@@ -96,7 +96,6 @@ void updateLaser(gobj_t laser[]){
     }
 }
 
-// general
 void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t img, uint8_t active,
              uint8_t boxX1, uint8_t boxY1, uint8_t boxX2, uint8_t boxY2){
 
@@ -117,32 +116,6 @@ void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t 
     obj->boxX2 = boxX2;
     obj->boxY2 = boxY2;
 
-}
-
-// Old draw code - maybe useful somewhere else? Main game loop uses new code
-void drawObj(gobj_t *player){
-    uint8_t i;
-    uint8_t j;
-
-    // before we do anything, we check if the object is active:
-    if (player->active){
-
-        // go to origin
-        gotoxy(player->x, player->y);
-
-        for (i = 0; i < GRAPH_SIZE; i++){
-            for (j = 0; j < GRAPH_SIZE; j++){
-
-                // First index in sheet is the player image value
-                // the two others are for the 2d graphics
-                if (graph[player->img][j][i] != 0){
-                    gotoxy(player->x + i, player->y + j);
-                    printf("%c", graph[player->img][j][i]);
-                }
-            }
-        }
-        //gotoxy(3,3); // removes tail.
-    }
 }
 
 void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]){
@@ -244,8 +217,39 @@ void drawBackground(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]){
             writeBgToBuffer(14, 0, 5, 0, upBuffer);
             writeBgToBuffer(13, 5, 5, 1, upBuffer);
             writeBgToBuffer(13, 10, 5, 3, upBuffer);
-            writeBgToBuffer(15, 15, 5, 3, upBuffer);
-            writeBgToBuffer(12, 30, 30, 0, upBuffer);
+            writeBgToBuffer(15, 15, 5, 1, upBuffer);
+            writeBgToBuffer(13, 15, 0, 1, upBuffer);
+            writeBgToBuffer(14, 20, 0, 3, upBuffer);
+            writeBgToBuffer(14, 24, 0, 3, upBuffer);
+            writeBgToBuffer(14, 24, 5, 1, upBuffer);
+            writeBgToBuffer(13, 28, 0, 3, upBuffer);
+            writeBgToBuffer(14, 33, 0, 3, upBuffer);
+            writeBgToBuffer(14, 37, 0, 3, upBuffer);
+            writeBgToBuffer(15, 37, 5, 0, upBuffer);
+            writeBgToBuffer(13, 41, 0, 0, upBuffer);
+            writeBgToBuffer(13, 41, 5, 1, upBuffer);
+            writeBgToBuffer(14, 41, 10, 0, upBuffer);
+            writeBgToBuffer(13, 45, 0, 0, upBuffer);
+            writeBgToBuffer(14, 45, 5, 0, upBuffer);
+            writeBgToBuffer(14, 7, 10, 0, upBuffer);
+            writeBgToBuffer(14, 7, 10, 0, upBuffer);
+
+            writeBgToBuffer(13, 45, 33, 0, upBuffer);
+            writeBgToBuffer(14, 45, 38, 0, upBuffer);
+            writeBgToBuffer(14, 41, 33, 2, upBuffer);
+            writeBgToBuffer(14, 41, 29, 2, upBuffer);
+            writeBgToBuffer(14, 0, 65, 3, upBuffer);
+            writeBgToBuffer(14, 4, 65, 3, upBuffer);
+            writeBgToBuffer(14, 0, 61, 3, upBuffer);
+            writeBgToBuffer(14, 8, 68, 3, upBuffer);
+            //Stars
+            writeBgToBuffer(12, 31, 11, 0, upBuffer);
+            writeBgToBuffer(12, 3, 17, 1, upBuffer);
+            writeBgToBuffer(12, 46, 15, 0, upBuffer);
+            writeBgToBuffer(12, 14, 28, 2, upBuffer);
+            writeBgToBuffer(12, 36, 49, 3, upBuffer);
+            writeBgToBuffer(12, 1, 40, 3, upBuffer);
+            writeBgToBuffer(12, 37, 25, 2, upBuffer);
 
 }
 
@@ -426,7 +430,7 @@ void enemyHandler(gobj_t enemy[], uint8_t difficulty){
                 for (i=0; i < ENEMY_POOL && flag_breakloop; i++){
 
                         if (!enemy[i].active){
-                            initObj(&enemy[i], pos + offsetPos, 0, 1, 2, 1, 1, 1, 4, 4);
+                            initObj(&enemy[i], pos + offsetPos, 0, ENEMY_SPEED, 2, SET_ACTIVE, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2);
                             flag_breakloop = 0;
                     }
                 }
