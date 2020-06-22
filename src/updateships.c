@@ -40,12 +40,16 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
 
             if (!boundaryCheck(WIDTH, HEIGHT, tempx + tempspeed, tempy)){
                 tempx += tempspeed;
+                setLed(0,0,0);
+                LedPinSetup(9,'A',0);
             }
     }
     if (controlChar == 'a'){
 
             if(!(boundaryCheck(WIDTH, HEIGHT, tempx - tempspeed, tempy)))
             tempx -= tempspeed;
+            setLed(0,0,0);
+            LedPinSetup(7,'C',0);
     }
 
     // y position
@@ -53,15 +57,19 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
 
             if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy - tempspeed))
             tempy -= tempspeed;
+            setLed(0,0,0);
+            LedPinSetup(4,'B',0);
     }
     if (controlChar == 's'){
 
             if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy+tempspeed))
             tempy += tempspeed;
+            LedPinSetup(7,'C',0);
+            LedPinSetup(4,'B',0);
     }
 
     // shoot
-    if (controlChar == 'q'){
+    if (controlChar == 32){
             spawnLaser(player, laser);
     }
     player->x = tempx;
@@ -227,6 +235,20 @@ void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t up
     }
 }
 
+void drawBackground(uint8_t upBuffer[WIDTH][HEIGHT]){
+// Function to collect all calls to WriteBgToBuffer, so it doesn't clutter the gameloop:
+
+            writeBgToBuffer(13, 0, 0, 2, upBuffer);
+            writeBgToBuffer(13, 5, 0, 3, upBuffer);
+            writeBgToBuffer(13, 10, 0, 0, upBuffer);
+            writeBgToBuffer(14, 0, 5, 0, upBuffer);
+            writeBgToBuffer(13, 5, 5, 1, upBuffer);
+            writeBgToBuffer(13, 10, 5, 3, upBuffer);
+            writeBgToBuffer(15, 15, 5, 3, upBuffer);
+            writeBgToBuffer(12, 30, 30, 0, upBuffer);
+
+}
+
 void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HEIGHT]){
 
    uint8_t i;
@@ -298,15 +320,124 @@ void updateEnemy(gobj_t enemy[]){
     }
 }
 
-void enemyHandler(gobj_t enemy[]){
+void enemyHandler(gobj_t enemy[], uint8_t difficulty){
+    static uint8_t timeline_index = 0;
+    static uint8_t formation_index = 0;
     static uint8_t timer = 0;
     uint8_t i;
+    uint8_t flag_breakloop;
+    uint8_t *formptr; // for ref the formation
+    uint8_t formlength; // represents formation length
+    uint8_t pos; // position in formation
+    uint16_t time = 0; // wait time in formation
+    uint8_t offsetPos; //set by the timeline to offset formations
 
-    for(i=0; i < ENEMY_POOL; i++){
-        if (!(enemy[i].active) && timer % i == 0){
-            initObj(&enemy[i], 10 + i*2, 2, 1, 2, 1, 1, 1, 4, 4);
+    ////////////////////////////////////// timeline decelerations ///////////////////////////////
+    uint8_t time0Length = 7;
+    uint16_t timeline0[7] = {0x0004, 0x0002, 0x0005, 0x0005, 0x0002, 0x0304, 0x0000};
+
+    ///////////////////////////////////// formations decelerations ////////////////////////////////
+    uint8_t form1[1] = {0x10}; // wait till screen is clear;
+    uint8_t form2[1] = {0x04}; // wait till half the screen is clear;
+    uint8_t form3[1] = {0x40}; // single enemy at pos 0;
+    uint8_t form4[5] = {0x41, 0x01, 0x40, 0x42, 0x01}; // triangle formation of 3;
+    uint8_t form5[8] = {0x42, 0x01, 0x41, 0x43, 0x01, 0x40, 0x44, 0x01}; // triangle formation of 5;
+    uint8_t form6[7] = {0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x01}; // horizontal line formation of 5;
+    uint8_t form7[10] = {0x40, 0x01, 0x40, 0x01, 0x40, 0x01, 0x40, 0x01, 0x40, 0x01}; // vertical line formation of 5
+    // first we read parameters from the timeline entry:
+    // Offset position [11:8]: offset the formation by this much:
+    offsetPos = ((timeline0[timeline_index] & 0x0F00) >> 8);
+    offsetPos *= GRAPH_SIZE;
+    // then we choose which formation to create from bits [7:0]
+    // if bits [7:0] = 0x00 then the timeline will always stop reading and return to gameloop
+    switch(timeline0[timeline_index] & 0x00FF){
+
+        case 0:
+            return;
+
+        case 1:
+            formptr = form1;
+            formlength = sizeof(form1)/sizeof(form1[0]);
+            break;
+
+        case 2:
+            formptr = form2;
+            formlength = sizeof(form2)/sizeof(form2[0]);
+            break;
+
+        case 3:
+            formptr = form3;
+            formlength = sizeof(form3)/sizeof(form3[0]);
+            break;
+
+        case 4:
+            formptr = form4;
+            formlength = sizeof(form4)/sizeof(form4[0]);
+            break;
+
+        case 5:
+            formptr = form5;
+            formlength = sizeof(form5)/sizeof(form5[0]);
+            break;
+
+        case 6:
+            formptr = form6;
+            formlength = sizeof(form6)/sizeof(form6[0]);
+            break;
+
+        case 7:
+            formptr = form7;
+            formlength = sizeof(form7)/sizeof(form7[0]);
             break;
         }
-    timer++;
-    }
+
+    // when that is done, we can work with the contents of the formation:
+    while(formation_index < formlength) {
+
+            // read this as a time event [7:6] = 00
+            if((formptr[formation_index] & 0xC0) >> 6 == 0){
+                // read wait time from [5:0]. The wait time have been multiplied by graphic size
+                // So enemies are spaced out by sprite size;
+                time = (formptr[formation_index] & 0x3F);
+                time *= GRAPH_SIZE;
+
+                if(time > timer){
+                    // if the wait requirement hasent been met, then return.
+                    timer++;
+                    return;
+
+                } else {
+                    //reset timer and continue
+                    timer = 0;
+                }
+
+            // read this as a spawn event [7:6] = 01
+            } else if((formptr[formation_index] & 0xC0) >> 6 == 1){
+
+                // read position from bits [3:0]
+                // the position increments by graphic size (5);
+                pos = (formptr[formation_index] & 0x0F);
+                pos *= GRAPH_SIZE;
+                // read enemy ship type form bits [5:4];
+                // there is only one type, so the bits is never read is never used :,(
+
+                // look for ship to spawn
+                flag_breakloop = 1; // this flag breaks the for-loop early when 0
+                for (i=0; i < ENEMY_POOL && flag_breakloop; i++){
+
+                        if (!enemy[i].active){
+                            initObj(&enemy[i], pos + offsetPos, 0, 1, 2, 1, 1, 1, 4, 4);
+                            flag_breakloop = 0;
+                    }
+                }
+            }
+            formation_index++;
+        }
+        // finally we check if we are finished reading the formation, and increments
+        // timeline index (but only if it doesnt overflow the timeline!)
+        if ((formation_index <= formlength) && (timeline_index < time0Length)){
+            timeline_index++;
+            formation_index = 0; // reset formation index when we are done
+            timer = 0;
+        }
 }

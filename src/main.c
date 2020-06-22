@@ -13,7 +13,8 @@
 int main()
 {
     uart_init(115200);
-
+    ioConfig();
+    ledsetup();
     // temp variable
     uint8_t settings = 1;
 

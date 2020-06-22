@@ -32,8 +32,10 @@ void gameLoop(uint8_t settings){
 
     // create a pool of gameobject structs for use in the game
     gobj_t player;
-    gobj_t enemy0, enemy1, enemy2, enemy3, enemy4, enemy5;
-    gobj_t enemyArray[ENEMY_POOL] = {enemy0, enemy1, enemy2, enemy3, enemy4, enemy5};
+    gobj_t enemy0, enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7,
+           enemy8, enemy9, enemy10, enemy11, enemy12, enemy13, enemy14, enemy15;
+    gobj_t enemyArray[ENEMY_POOL] = {enemy0, enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7,
+                                     enemy8, enemy9, enemy10, enemy11, enemy12, enemy13, enemy14, enemy15};
     gobj_t laser0, laser1, laser2, laser3, laser4, laser5;
     gobj_t laserArray[LASER_POOL] = {laser0, laser1, laser2, laser3, laser4, laser5};
 
@@ -56,7 +58,7 @@ void gameLoop(uint8_t settings){
         // Timer to update logic
         if ((checkCount - midTime1) > MAX_C_UPDATERATE){
 
-            enemyHandler(enemyArray);
+            enemyHandler(enemyArray, settings);
 
             //updates all gameobjects:
             updatePlayer(&player, laserArray);
@@ -78,20 +80,11 @@ void gameLoop(uint8_t settings){
             midTime1 = checkCount;
         }
 
-        // timer to update graphics
+        //////////////////// timer to update graphics ///////////////////////
         if (checkCount - midTime2 > MAX_C_GRAPH){
 
             // draw bg:
-            // maybe put all these into its own function or macro - they take up a lot of space
-            writeBgToBuffer(13, 0, 0, 2, pfUpdate);
-            writeBgToBuffer(13, 5, 0, 3, pfUpdate);
-            writeBgToBuffer(13, 10, 0, 0, pfUpdate);
-            writeBgToBuffer(14, 0, 5, 0, pfUpdate);
-            writeBgToBuffer(13, 5, 5, 1, pfUpdate);
-            writeBgToBuffer(13, 10, 5, 3, pfUpdate);
-            writeBgToBuffer(15, 15, 5, 3, pfUpdate);
-            writeBgToBuffer(12, 30, 30, 0, pfUpdate);
-
+            drawBackground(pfUpdate);
             // draw player
             writeToUpdateBuffer(&player,pfUpdate);
             // draw enemies

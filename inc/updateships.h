@@ -4,11 +4,12 @@
 #include <string.h>
 #include "ansi.h"
 #include "graphicsSheet.h"
+#include "pin_io.h"
 
 #define LASER_POOL 6 // amount of active shots on screen
 #define LASER_SPEED -1 // speed of laser
 
-#define ENEMY_POOL 6 // amount of enemies on screen
+#define ENEMY_POOL 16 // amount of enemies on screen
 
 // Playfield constants
 #define WIDTH 50 // width of playfield
@@ -48,10 +49,11 @@ void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t 
 void drawObj(gobj_t *player);
 void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH][HEIGHT]);
 void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t upBuffer[WIDTH][HEIGHT]);
+void drawBackground(uint8_t upBuffer[WIDTH][HEIGHT]);
 void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HEIGHT]);
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2);
 
 void updateEnemy(gobj_t enemy[]);
-void enemyHandler(gobj_t enemy[]);
+void enemyHandler(gobj_t enemy[], uint8_t difficulty);
 
 #endif
