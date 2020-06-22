@@ -8,6 +8,7 @@
 #include <string.h>
 #include "charset.h"
 #include "gameLoop.h"
+#include "gameScreen.h"
 
 
 int main()
@@ -16,8 +17,10 @@ int main()
     ioConfig();
     ledsetup();
     // temp variable
-    uint8_t settings = 1;
+    uint8_t settings;
+    uint16_t highScore[10] = {0,0,0,0,0,0,0,0,0,0};
 
+    settings = mainMenu(highScore);
     gameLoop(settings);
 
     while(1){};

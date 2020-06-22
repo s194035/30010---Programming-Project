@@ -1,11 +1,11 @@
 #ifndef ANSI_H
 #define ANSI_H
-
+#define ESC 0x1B
 #include "stm32f30x_conf.h"
 #include "30010_io.h"
-void fgcolor(uint8_t foreground);
+#include "string.h"
 
-void title(int x, int y, char text []);
+void fgcolor(uint8_t foreground);
 
 void bgcolor(uint8_t background);
 
@@ -25,8 +25,12 @@ void blink(uint8_t on);
 
 void inverse(uint8_t on);
 
-void box(int x1, int y1, int x2, int y2);
+void title(int x, int y, char text[]);
 
-void window(int x1, int y1, int x2, int y2, char text[], char style);
+void box(uint8_t width, uint8_t height);
+
+void box2(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
+
+void window(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, char text[], char style);
 
 #endif // ANSI_H

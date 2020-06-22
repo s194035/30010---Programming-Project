@@ -12,8 +12,8 @@
 #define ENEMY_POOL 16 // amount of enemies on screen
 
 // Playfield constants
-#define WIDTH 50 // width of playfield
-#define HEIGHT 70 // height of playfield
+#define WIDTH_PF 50 // width of playfield
+#define HEIGHT_PF 70 // height of playfield
 #define PF_OFF_X 8 // playfield offset on x-axis
 #define PF_OFF_Y 8 //playfield offset on y-axis
 
@@ -47,10 +47,10 @@ void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t 
              uint8_t boxX1, uint8_t boxY1, uint8_t boxX2, uint8_t boxY2);
 
 void drawObj(gobj_t *player);
-void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH][HEIGHT]);
-void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t upBuffer[WIDTH][HEIGHT]);
-void drawBackground(uint8_t upBuffer[WIDTH][HEIGHT]);
-void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HEIGHT]);
+void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]);
+void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]);
+void drawBackground(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]);
+void drawFromBuffer(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF], uint8_t scrBuffer[WIDTH_PF][HEIGHT_PF]);
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2);
 
 void updateEnemy(gobj_t enemy[]);

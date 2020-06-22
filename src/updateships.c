@@ -2,7 +2,7 @@
 
 uint8_t boundaryCheck(uint8_t w, uint8_t h, uint8_t x, uint8_t y){
 
-    if (x < 0 || WIDTH - GRAPH_SIZE < x || y < 0 || HEIGHT - GRAPH_SIZE < y){
+    if (x < 0 || WIDTH_PF - GRAPH_SIZE < x || y < 0 || HEIGHT_PF - GRAPH_SIZE < y){
             return 1; // graphics outside boundary
     }
     return 0; // else return 0
@@ -38,7 +38,7 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
     // x position
     if (controlChar == 'd'){
 
-            if (!boundaryCheck(WIDTH, HEIGHT, tempx + tempspeed, tempy)){
+            if (!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx + tempspeed, tempy)){
                 tempx += tempspeed;
                 setLed(0,0,0);
                 LedPinSetup(9,'A',0);
@@ -46,7 +46,7 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
     }
     if (controlChar == 'a'){
 
-            if(!(boundaryCheck(WIDTH, HEIGHT, tempx - tempspeed, tempy)))
+            if(!(boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx - tempspeed, tempy)))
             tempx -= tempspeed;
             setLed(0,0,0);
             LedPinSetup(7,'C',0);
@@ -55,14 +55,14 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
     // y position
     if (controlChar == 'w'){
 
-            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy - tempspeed))
+            if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy - tempspeed))
             tempy -= tempspeed;
             setLed(0,0,0);
             LedPinSetup(4,'B',0);
     }
     if (controlChar == 's'){
 
-            if(!boundaryCheck(WIDTH, HEIGHT, tempx, tempy+tempspeed))
+            if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy+tempspeed))
             tempy += tempspeed;
             LedPinSetup(7,'C',0);
             LedPinSetup(4,'B',0);
@@ -86,7 +86,7 @@ void updateLaser(gobj_t laser[]){
         if(laser[i].active){
 
             // Checks if laser is out of bounds
-            if(!boundaryCheck(WIDTH, HEIGHT, laser[i].x, laser[i].y + laser[i].speed)) {
+            if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, laser[i].x, laser[i].y + laser[i].speed)) {
                 laser[i].y += laser[i].speed;
             } else {
             // if its out of bounds, set it to inactive
@@ -145,7 +145,7 @@ void drawObj(gobj_t *player){
     }
 }
 
-void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH][HEIGHT]){
+void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]){
    uint8_t i;
    uint8_t j;
 
@@ -173,7 +173,7 @@ void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH][HEIGHT]){
     }
 }
 
-void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t upBuffer[WIDTH][HEIGHT]){
+void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]){
    int8_t i;
    int8_t j;
 
@@ -235,7 +235,7 @@ void writeBgToBuffer(uint8_t img, uint8_t x, uint8_t y, uint8_t flip, uint8_t up
     }
 }
 
-void drawBackground(uint8_t upBuffer[WIDTH][HEIGHT]){
+void drawBackground(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]){
 // Function to collect all calls to WriteBgToBuffer, so it doesn't clutter the gameloop:
 
             writeBgToBuffer(13, 0, 0, 2, upBuffer);
@@ -249,7 +249,7 @@ void drawBackground(uint8_t upBuffer[WIDTH][HEIGHT]){
 
 }
 
-void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HEIGHT]){
+void drawFromBuffer(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF], uint8_t scrBuffer[WIDTH_PF][HEIGHT_PF]){
 
    uint8_t i;
    uint8_t j;
@@ -258,8 +258,8 @@ void drawFromBuffer(uint8_t upBuffer[WIDTH][HEIGHT], uint8_t scrBuffer[WIDTH][HE
     //drawn to the screen (scrBuffer). If there is a difference, then call gotoxy and update scrBuffer
     //with contents of upBuffer
 
-    for (i = 0; i < WIDTH; i++){
-            for (j = 0; j < HEIGHT; j++){
+    for (i = 0; i < WIDTH_PF; i++){
+            for (j = 0; j < HEIGHT_PF; j++){
 
                 // Compares if there is a difference
                 if(!(upBuffer[i][j] == scrBuffer[i][j])){
@@ -310,7 +310,7 @@ void updateEnemy(gobj_t enemy[]){
         if(enemy[i].active){
 
             // Checks if laser is out of bounds
-            if(!boundaryCheck(WIDTH, HEIGHT, enemy[i].x, enemy[i].y + enemy[i].speed)) {
+            if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, enemy[i].x, enemy[i].y + enemy[i].speed)) {
                 enemy[i].y += enemy[i].speed;
             } else {
             // if its out of bounds, set it to inactive

@@ -1,10 +1,4 @@
-#define ESC 0x1B
-#include "30010_io.h"
-#include "string.h"
-
-
-#define _ANSI_H_
-
+#include "ansi.h"
 
 void fgcolor(uint8_t foreground) {
 /*  Value      foreground     Value     foreground
@@ -33,7 +27,6 @@ void bgcolor(uint8_t background) {
                 the colors are initially like that, but when the background color is first changed there is no
  	              way comming back.
    Hint:        Use resetbgcolor(); clrscr(); to force HyperTerminal into gray text on black background.
-
     Value      Color
     ------------------
       0        Black
@@ -84,6 +77,16 @@ void underline(uint8_t on){
         printf("%c[24m", ESC);
 }
 
+// Makes text blink in Putty terminal
+void blink(uint8_t on){
+    printf("%c[%dm", ESC, (on == 1) ? 05 : 25);
+}
+
+// Inverts the colors of the foreground text and background.
+void inverse(uint8_t on){
+    printf("%c[%dm", ESC, (on == 1) ? 07 : 27);
+}
+
 // Makes title for game box.
 void title(int x, int y, char text []) {
     gotoxy (x,y);
@@ -95,20 +98,46 @@ void title(int x, int y, char text []) {
 
 }
 
-// Makes text blink in Putty terminal
-void blink(uint8_t on){
-    printf("%c[%dm", ESC, (on == 1) ? 05 : 25);
-}
-
-// Inverts the colors of the foreground text and background.
-void inverse(uint8_t on){
-    printf("%c[%dm", ESC, (on == 1) ? 07 : 27);
-}
-
-// This function just draws a box.
-void box(int x1, int y1, int x2, int y2){
+// This function just draws a rectangular box.
+void box(uint8_t width, uint8_t height){
     clrscr();
     int i;
+
+    char upLeft = 201;
+    char downLeft = 200;
+    char upRight = 187;
+    char downRight = 188;
+
+    // Printing horizontal line
+    for(i = 1; i<width; i++){
+        gotoxy(i,0);
+        printf("%c",205);
+        gotoxy(i,height);
+        printf("%c", 205);
+    }
+    // Printing vertical
+    for(i = 1; i<height; i++){
+        gotoxy(0,i);
+        printf("%c",186);
+        gotoxy(width,i);
+        printf("%c",186);
+    }
+
+    // Printing the corners
+    gotoxy(0,0);
+    printf("%c",upLeft);
+    gotoxy(0,height);
+    printf("%c",downLeft);
+    gotoxy(width,0);
+    printf("%c",upRight);
+    gotoxy(width, height);
+    printf("%c",downRight);
+
+
+}
+
+void box2(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
+    uint8_t i;
 
     // Drawing the corners of the window
     gotoxy(x1,y1);
@@ -123,22 +152,21 @@ void box(int x1, int y1, int x2, int y2){
     // Drawing the horizontal lines
     for(i = y1+1; i<y2; i++){
             gotoxy(x1,i);
-            printf("%c",205);
+            printf("%c",186);
             gotoxy(x2,i);
-            printf("%c", 205);
+            printf("%c", 186);
     }
 
     // Drawing the vertical lines
     for(i = x1+1; i<x2; i++){
             gotoxy(i,y1);
-            printf("%c",186);
+            printf("%c",205);
             gotoxy(i,y2);
-            printf("%c",186);
+            printf("%c",205);
     }
 }
-
 // This functions draws a window with a title and 2 different styles.
-void window(int x1, int y1, int x2, int y2, char text[], char style){
+void window(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, char text[], char style){
     int i;
     inverse(0);
     clrscr();
