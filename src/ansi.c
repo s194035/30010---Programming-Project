@@ -1,10 +1,4 @@
-#define ESC 0x1B
-#include "30010_io.h"
-#include "string.h"
-
-
-#define _ANSI_H_
-
+#include "ansi.h"
 
 void fgcolor(uint8_t foreground) {
 /*  Value      foreground     Value     foreground
@@ -84,6 +78,16 @@ void underline(uint8_t on){
         printf("%c[24m", ESC);
 }
 
+// Makes text blink in Putty terminal
+void blink(uint8_t on){
+    printf("%c[%dm", ESC, (on == 1) ? 05 : 25);
+}
+
+// Inverts the colors of the foreground text and background.
+void inverse(uint8_t on){
+    printf("%c[%dm", ESC, (on == 1) ? 07 : 27);
+}
+
 // Makes title for game box.
 void title(int x, int y, char text []) {
     gotoxy (x,y);
@@ -95,47 +99,42 @@ void title(int x, int y, char text []) {
 
 }
 
-// Makes text blink in Putty terminal
-void blink(uint8_t on){
-    printf("%c[%dm", ESC, (on == 1) ? 05 : 25);
-}
-
-// Inverts the colors of the foreground text and background.
-void inverse(uint8_t on){
-    printf("%c[%dm", ESC, (on == 1) ? 07 : 27);
-}
-
-// This function just draws a box.
-void box(int x1, int y1, int x2, int y2){
+// This function just draws a rectangular box.
+void box(int width, int height){
     clrscr();
     int i;
 
-    // Drawing the corners of the window
-    gotoxy(x1,y1);
-    printf("%c\n", 201);
-    gotoxy(x2,y1);
-    printf("%c",200);
-    gotoxy(x1,y2);
-    printf("%c", 187);
-    gotoxy(x2,y2);
-    printf("%c", 188);
+    char upLeft = 201;
+    char downLeft = 200;
+    char upRight = 187;
+    char downRight = 188;
 
-    // Drawing the horizontal lines
-    for(i = y1+1; i<y2; i++){
-            gotoxy(x1,i);
-            printf("%c",205);
-            gotoxy(x2,i);
-            printf("%c", 205);
+    // Printing horizontal line
+    for(i = 1; i<width; i++){
+        gotoxy(i,0);
+        printf("%c",205);
+        gotoxy(i,height);
+        printf("%c", 205);
+    }
+    // Printing vertical
+    for(i = 1; i<height; i++){
+        gotoxy(0,i);
+        printf("%c",186);
+        gotoxy(width,i);
+        printf("%c",186);
     }
 
-    // Drawing the vertical lines
-    for(i = x1+1; i<x2; i++){
-            gotoxy(i,y1);
-            printf("%c",186);
-            gotoxy(i,y2);
-            printf("%c",186);
-    }
-}
+    // Printing the corners
+    gotoxy(0,0);
+    printf("%c",upLeft);
+    gotoxy(0,height);
+    printf("%c",downLeft);
+    gotoxy(width,0);
+    printf("%c",upRight);
+    gotoxy(width, height);
+    printf("%c",downRight);
+
+
 
 // This functions draws a window with a title and 2 different styles.
 void window(int x1, int y1, int x2, int y2, char text[], char style){
@@ -213,4 +212,5 @@ void window(int x1, int y1, int x2, int y2, char text[], char style){
     }
     inverse(0);
     gotoxy(x2+1,y2+1);
+}
 }
