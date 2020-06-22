@@ -19,4 +19,6 @@ void ledJoystick();
 uint8_t readADC1();
 
 uint8_t readADC2();
+
+void LedPinSetup(uint8_t port, char portName, uint8_t value);
 #endif // PIN_IO_H
