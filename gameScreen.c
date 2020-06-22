@@ -1,12 +1,13 @@
 #include "gameScreen.h"
 #include "ansi.h"
 #include "updateships.h"
+#include <stdio.h>
 
 #define WIDTH 168
 #define HEIGHT 44
 
 
-uint8_t mainMenu(gobj_t *player, gobj_t *laser){
+uint8_t mainMenu(uint16_t *highScore){
     uint8_t startPoint = 0;
     uint8_t menuPoint = 0;
     uint8_t difficultyPoint = 1;
@@ -30,10 +31,10 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
                 startPoint = 6;
                 printPlayer();
                 gotoxy(95,13);
-                printf("O",32);
-                }
-            controlChar = 0;
+                printf("O");
             }
+            controlChar = 0;
+        }
 
             if(menuPoint == 1){
                 if(controlChar == 's'){
@@ -67,7 +68,7 @@ uint8_t mainMenu(gobj_t *player, gobj_t *laser){
                 startPoint = 2;
             }
             else if(controlChar == 13){
-                printHighScore();
+                printHighScore(highScore);
                 startPoint = 6;
             }
             controlChar = 0;
@@ -214,19 +215,31 @@ void printHelp(){
     printf("talk, let's play.");
 }
 
-void printHighScore(){
+void printHighScore(uint16_t *highScore){
+    uint8_t i, j;
+    uint8_t temp;
+    for (i = 0; i < 10; i++){
+		for (j = i + 1; j < 10; j++){
+			if(highScore[i] < highScore[j]){
+
+				temp = highScore[i];
+				highScore[i] = highScore[j];
+				highScore[j] = temp;
+			}
+		}
+	}
+
     clrscr();
     gotoxy(20,13);
-    printf("1: ");
+    printf("1: %d", highScore[0]);
     gotoxy(20,15);
-    printf("2: ");
+    printf("2: %d", highScore[1]);
     gotoxy(20,17);
-    printf("3: ");
+    printf("3: %d", highScore[2]);
     gotoxy(20,19);
-    printf("4: ");
+    printf("4: %d", highScore[3]);
     gotoxy(20,21);
-    printf("5: ");
-
+    printf("5: %d", highScore[4]);
 }
 
 void printGameOver(){
