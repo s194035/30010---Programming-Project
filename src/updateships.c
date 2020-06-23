@@ -1,8 +1,9 @@
 #include "updateships.h"
 
-uint8_t boundaryCheck(uint8_t w, uint8_t h, uint8_t x, uint8_t y){
+uint8_t boundaryCheck(uint8_t w, uint8_t h, uint16_t x, uint16_t y){
 
-    if (x < 0 || WIDTH_PF - GRAPH_SIZE < x || y < 0 || HEIGHT_PF - GRAPH_SIZE < y){
+    // since all x,y coordinates are in 8.8, we have to remember to shift to the right:
+    if ((x >> FIX8_shift)  < 0 || WIDTH_PF - GRAPH_SIZE < (x >> FIX8_shift) || (y >> FIX8_shift) < 0 || HEIGHT_PF - GRAPH_SIZE < (y >> FIX8_shift)){
             return 1; // graphics outside boundary
     }
     return 0; // else return 0
@@ -15,7 +16,7 @@ uint8_t i;
 // Cycle the list for active objects
     for (i = 0; i < LASER_POOL; i++){
         if (!(laser[i].active)){
-            laser[i].x = player->x;
+            laser[i].x = player->x; // fixed point to fixed point, so no bitshift required
             laser[i].y = player->y;
             laser[i].speed = LASER_SPEED;
             laser[i].active = 1;
@@ -27,18 +28,16 @@ uint8_t i;
 
 void updatePlayer(gobj_t *player, gobj_t laser[]){
 
-    // TODO: split this function up in a inputmanager() and a playerupdate()
-
-    uint8_t tempx = player->x;
-    uint8_t tempy = player->y;
-    int8_t tempspeed = player->speed;
+    uint16_t tempx = player->x;
+    uint16_t tempy = player->y;
+    int16_t tempspeed = player->speed;
 
     char controlChar = uart_get_char();
 
     // x position
     if (controlChar == 'd'){
 
-            if (!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx + tempspeed, tempy)){
+            if (!boundaryCheck(WIDTH_PF, HEIGHT_PF, (tempx + tempspeed), tempy)){
                 tempx += tempspeed;
                 setLed(0,0,0);
                 LedPinSetup(9,'A',0);
@@ -96,8 +95,8 @@ void updateLaser(gobj_t laser[]){
     }
 }
 
-void initObj(gobj_t *obj, uint8_t startx, uint8_t starty, int8_t speed, uint8_t img, uint8_t active,
-             uint8_t boxX1, uint8_t boxY1, uint8_t boxX2, uint8_t boxY2){
+void initObj(gobj_t *obj, uint16_t startx, uint16_t starty, int16_t speed, uint8_t img, uint8_t active,
+             uint16_t boxX1, uint16_t boxY1, uint16_t boxX2, uint16_t boxY2){
 
     // start position and speed
     obj->x = startx;
@@ -139,7 +138,8 @@ void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]){
 
                     // The graphics in the graphicssheet is rotated by 90 degrees
                     // Thats why we rotate it back by switching i and j
-                    upBuffer[i + obj->x][j + obj->y] = graph[obj->img][j][i];
+                    // remember fixed point notation! shift by 8 to the right
+                    upBuffer[i + (obj->x >> FIX8_shift)][j + (obj->y >> FIX8_shift)] = graph[obj->img][j][i];
                 }
             }
         }
@@ -285,18 +285,28 @@ void drawFromBuffer(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF], uint8_t scrBuffer[WID
 
 uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2){
 
+    uint16_t obj1_boxX1 = (obj1->boxX1 << FIX8_shift);
+    uint16_t obj1_boxY1 = (obj1->boxY1 << FIX8_shift);
+    uint16_t obj1_boxX2 = (obj1->boxX2 << FIX8_shift);
+    uint16_t obj1_boxY2 = (obj1->boxY2 << FIX8_shift);
+
+    uint16_t obj2_boxX1 = (obj2->boxX1 << FIX8_shift);
+    uint16_t obj2_boxY1 = (obj2->boxY1 << FIX8_shift);
+    uint16_t obj2_boxX2 = (obj2->boxX2 << FIX8_shift);
+    uint16_t obj2_boxY2 = (obj2->boxY2 << FIX8_shift);
+
     if (obj1->active && obj2->active){
         // first we check for possible collision on x axis:
         // First statement is corner on each side of box
         // next two is each corner inside of box
-        if ( (obj1->boxX1 + obj1->x <= obj2->boxX1 + obj2->x && obj2->boxX2 + obj2->x <= obj1->boxX2 + obj1->x) ||
-             (obj2->boxX1 + obj2->x <= obj1->boxX1 + obj1->x && obj1->boxX1 + obj1->x <= obj2->boxX2 + obj2->x) ||
-             (obj2->boxX1 + obj2->x <= obj1->boxX2 + obj1->x && obj1->boxX2 + obj1->x <= obj2->boxX2 + obj2->x) ){
+        if ( (obj1_boxX1 + obj1->x <= obj2_boxX1 + obj2->x && obj2_boxX2 + obj2->x <= obj1_boxX2 + obj1->x) ||
+             (obj2_boxX1 + obj2->x <= obj1_boxX1 + obj1->x && obj1_boxX1 + obj1->x <= obj2_boxX2 + obj2->x) ||
+             (obj2_boxX1 + obj2->x <= obj1_boxX2 + obj1->x && obj1_boxX2 + obj1->x <= obj2_boxX2 + obj2->x) ){
 
             // Then we check for possible collision on y axis:
-            if ( (obj1->boxY1 + obj1->y <= obj2->boxY1 + obj2->y && obj2->boxY2 + obj2->y <= obj1->boxY2 + obj1->y) ||
-                 (obj2->boxY1 + obj2->y <= obj1->boxY1 + obj1->y && obj1->boxY1 + obj1->y <= obj2->boxY2 + obj2->y) ||
-                 (obj2->boxY1 + obj2->y <= obj1->boxY2 + obj1->y && obj1->boxY2 + obj1->y <= obj2->boxY2 + obj2->y) ){
+            if ( (obj1_boxY1 + obj1->y <= obj2_boxY1 + obj2->y && obj2_boxY2 + obj2->y <= obj1_boxY2 + obj1->y) ||
+                 (obj2_boxY1 + obj2->y <= obj1_boxY1 + obj1->y && obj1_boxY1 + obj1->y <= obj2_boxY2 + obj2->y) ||
+                 (obj2_boxY1 + obj2->y <= obj1_boxY2 + obj1->y && obj1_boxY2 + obj1->y <= obj2_boxY2 + obj2->y) ){
 
                     // there is a collision! Return true:
                     return(1);
@@ -430,7 +440,8 @@ void enemyHandler(gobj_t enemy[], uint8_t difficulty){
                 for (i=0; i < ENEMY_POOL && flag_breakloop; i++){
 
                         if (!enemy[i].active){
-                            initObj(&enemy[i], pos + offsetPos, 0, ENEMY_SPEED, 2, SET_ACTIVE, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2);
+                            // remember x and y are in fixed point so shift to the LEFT to get fixed point 8.8
+                            initObj(&enemy[i], (pos + offsetPos) << FIX8_shift, 0, ENEMY_SPEED, 2, SET_ACTIVE, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2);
                             flag_breakloop = 0;
                     }
                 }

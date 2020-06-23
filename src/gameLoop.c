@@ -48,7 +48,7 @@ void gameLoop(uint8_t settings){
     gobj_t laserArray[LASER_POOL] = {laser0, laser1, laser2, laser3, laser4, laser5};
 
     // initialize all the gameobjects
-    initObj(&player, WIDTH_PF/2, HEIGHT_PF-8, PLAYER_SPEED, 0, SET_ACTIVE, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2); // initialize player.
+    initObj(&player, ((WIDTH_PF/2) << FIX8_shift), ((HEIGHT_PF-8) << FIX8_shift), PLAYER_SPEED, 0, SET_ACTIVE, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2); // initialize player.
 
     for (i = 0; i < LASER_POOL; i++){
             initObj(&laserArray[i], 0, 0, 0, 1, SET_INACTIVE, LASER_BBOX_x1, LASER_BBOX_X2, LASER_BBOX_Y1, LASER_BBOX_Y2); // initialize all lasers

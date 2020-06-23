@@ -143,9 +143,9 @@ void box2(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
     gotoxy(x1,y1);
     printf("%c\n", 201);
     gotoxy(x2,y1);
-    printf("%c",200);
+    printf("%c",187);
     gotoxy(x1,y2);
-    printf("%c", 187);
+    printf("%c", 200);
     gotoxy(x2,y2);
     printf("%c", 188);
 
