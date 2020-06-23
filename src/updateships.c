@@ -28,54 +28,57 @@ uint8_t i;
 
 void updatePlayer(gobj_t *player, gobj_t laser[]){
 
-    uint16_t tempx = player->x;
-    uint16_t tempy = player->y;
-    int16_t tempspeed = player->speed;
+    if (player->active){
 
-    char controlChar = uart_get_char();
+        uint16_t tempx = player->x;
+        uint16_t tempy = player->y;
+        int16_t tempspeed = player->speed;
 
-    // x position
-    if (controlChar == 'd'){
+        char controlChar = uart_get_char();
 
-            if (!boundaryCheck(WIDTH_PF, HEIGHT_PF, (tempx + tempspeed), tempy)){
-                tempx += tempspeed;
+        // x position
+        if (controlChar == 'd'){
+
+                if (!boundaryCheck(WIDTH_PF, HEIGHT_PF, (tempx + tempspeed), tempy)){
+                    tempx += tempspeed;
+                    setLed(0,0,0);
+                    LedPinSetup(9,'A',0);
+                }
+        }
+        if (controlChar == 'a'){
+
+                if(!(boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx - tempspeed, tempy)))
+                tempx -= tempspeed;
                 setLed(0,0,0);
-                LedPinSetup(9,'A',0);
-            }
+                LedPinSetup(7,'C',0);
+        }
+
+        // y position
+        if (controlChar == 'w'){
+
+                if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy - tempspeed))
+                tempy -= tempspeed;
+                setLed(0,0,0);
+                LedPinSetup(4,'B',0);
+        }
+        if (controlChar == 's'){
+
+                if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy+tempspeed))
+                tempy += tempspeed;
+                LedPinSetup(7,'C',0);
+                LedPinSetup(4,'B',0);
+        }
+
+        // shoot
+        if (controlChar == 32){
+                spawnLaser(player, laser);
+        }
+        player->x = tempx;
+        player->y = tempy;
+
+        // clear input buffer to avoid sticky inputs
+        uart_clear();
     }
-    if (controlChar == 'a'){
-
-            if(!(boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx - tempspeed, tempy)))
-            tempx -= tempspeed;
-            setLed(0,0,0);
-            LedPinSetup(7,'C',0);
-    }
-
-    // y position
-    if (controlChar == 'w'){
-
-            if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy - tempspeed))
-            tempy -= tempspeed;
-            setLed(0,0,0);
-            LedPinSetup(4,'B',0);
-    }
-    if (controlChar == 's'){
-
-            if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy+tempspeed))
-            tempy += tempspeed;
-            LedPinSetup(7,'C',0);
-            LedPinSetup(4,'B',0);
-    }
-
-    // shoot
-    if (controlChar == 32){
-            spawnLaser(player, laser);
-    }
-    player->x = tempx;
-    player->y = tempy;
-
-    // clear input buffer to avoid sticky inputs
-    uart_clear();
 }
 
 void updateLaser(gobj_t laser[]){
@@ -95,7 +98,7 @@ void updateLaser(gobj_t laser[]){
     }
 }
 
-void initObj(gobj_t *obj, uint16_t startx, uint16_t starty, int16_t speed, uint8_t img, uint8_t active,
+void initObj(gobj_t *obj, uint16_t startx, uint16_t starty, int16_t speed, uint8_t img, uint8_t active, int8_t health,
              uint16_t boxX1, uint16_t boxY1, uint16_t boxX2, uint16_t boxY2){
 
     // start position and speed
@@ -108,6 +111,7 @@ void initObj(gobj_t *obj, uint16_t startx, uint16_t starty, int16_t speed, uint8
 
     // active
     obj->active = active;
+    obj->health = health;
 
     // set bounding box
     obj->boxX1 = boxX1;
@@ -441,7 +445,7 @@ void enemyHandler(gobj_t enemy[], uint8_t difficulty){
 
                         if (!enemy[i].active){
                             // remember x and y are in fixed point so shift to the LEFT to get fixed point 8.8
-                            initObj(&enemy[i], (pos + offsetPos) << FIX8_shift, 0, ENEMY_SPEED, 2, SET_ACTIVE, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2);
+                            initObj(&enemy[i], (pos + offsetPos) << FIX8_shift, 0, ENEMY_SPEED, 2, SET_ACTIVE, ENEMY_HEALTH, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2);
                             flag_breakloop = 0;
                     }
                 }

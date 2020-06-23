@@ -19,7 +19,8 @@ void gameLoop(uint8_t settings){
     // variables to save a point in time.
     uint32_t midTime1 = 0;
     uint32_t midTime2 = 0;
-
+    // score
+    uint16_t score = 0;
     // Handles graphic drawing in the playfield
     uint8_t pfBuffer[WIDTH_PF][HEIGHT_PF];
     uint8_t pfUpdate[WIDTH_PF][HEIGHT_PF];
@@ -48,13 +49,13 @@ void gameLoop(uint8_t settings){
     gobj_t laserArray[LASER_POOL] = {laser0, laser1, laser2, laser3, laser4, laser5};
 
     // initialize all the gameobjects
-    initObj(&player, ((WIDTH_PF/2) << FIX8_shift), ((HEIGHT_PF-8) << FIX8_shift), PLAYER_SPEED, 0, SET_ACTIVE, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2); // initialize player.
+    initObj(&player, ((WIDTH_PF/2) << FIX8_shift), ((HEIGHT_PF-8) << FIX8_shift), PLAYER_SPEED, 0, SET_ACTIVE, PLAYER_START_HEALTH, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2); // initialize player.
 
     for (i = 0; i < LASER_POOL; i++){
-            initObj(&laserArray[i], 0, 0, 0, 1, SET_INACTIVE, LASER_BBOX_x1, LASER_BBOX_X2, LASER_BBOX_Y1, LASER_BBOX_Y2); // initialize all lasers
+            initObj(&laserArray[i], 0, 0, 0, 1, SET_INACTIVE, LASER_HEALTH, LASER_BBOX_x1, LASER_BBOX_Y1, LASER_BBOX_X2, LASER_BBOX_Y2); // initialize all lasers
     }
     for (i = 0; i < ENEMY_POOL; i++){
-            initObj(&enemyArray[i], 0, 0, 0, 2, SET_INACTIVE, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2); // initialize all enemies
+            initObj(&enemyArray[i], 0, 0, 0, 2, SET_INACTIVE, ENEMY_HEALTH, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2); // initialize all enemies
     }
 
      //draw border
@@ -73,13 +74,22 @@ void gameLoop(uint8_t settings){
             updateLaser(laserArray);
             updateEnemy(enemyArray);
 
-            // check for collision:
+            // check for collision between lasers and enemies
             for (i=0; i < LASER_POOL; i++){
                 for (j=0; j < ENEMY_POOL; j++){
                     if (checkCollision(&laserArray[i], &enemyArray[j])){
                         enemyArray[j].active = 0;
                         laserArray[i].active = 0;
+                        score += 100;
                     }
+                }
+            }
+            // check for collision between players and enemies
+            for (i=0; i < ENEMY_POOL; i++){
+                if (checkCollision(&player, &enemyArray[i])){
+                    enemyArray[i].active = 0;
+                    lcd_face_anim(1, &faceAnim, &faceCount);
+                    player.health--;
                 }
             }
 
@@ -108,7 +118,7 @@ void gameLoop(uint8_t settings){
             memset(pfUpdate, 32, sizeof(pfUpdate));
             // update LCD screen
             lcd_face_anim(0, &faceAnim, &faceCount);
-            lcd_controller(LCDbuffer, 1, faceAnim);
+            lcd_controller(LCDbuffer, player.health, faceAnim);
             faceCount++;
             //Sets new relative point
             midTime2 = checkCount;

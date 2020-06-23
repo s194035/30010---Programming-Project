@@ -17,17 +17,21 @@
 #define LASER_BBOX_Y1 0
 #define LASER_BBOX_X2 4
 #define LASER_BBOX_Y2 5
+#define LASER_HEALTH 1
 
 // player constants
 #define PLAYER_BBOX_XY1 1 // x and y coordinates for bbox
 #define PLAYER_BBOX_XY2 4 // x and y coordinates for bbox
 #define PLAYER_SPEED 256 // speed of player in 8.8
+#define PLAYER_START_HEALTH 3 // player health
+#define PLAYER_MAX_HEALTH 5 // max health
 
 // enemy constants
 #define ENEMY_POOL 16 // amount of enemies on screen
 #define ENEMY_BBOX_XY1 1 // x and y coordinates for bbox
 #define ENEMY_BBOX_XY2 4 // x and y coordinates for bbox
 #define ENEMY_SPEED 128 // speed of enemy in 8.8
+#define ENEMY_HEALTH 1
 
 // Playfield constants
 #define WIDTH_PF 50 // width of playfield
@@ -49,6 +53,8 @@ typedef struct {
     //flags
     uint8_t active;
 
+    int8_t health; // set to a signed value to allow a small buffer to prevent overflow
+
     //Collison bounds:
     uint16_t boxX1;
     uint16_t boxY1;
@@ -63,7 +69,7 @@ uint8_t boundaryCheck(uint8_t w, uint8_t h, uint16_t x, uint16_t y);
 void spawnLaser(gobj_t *player, gobj_t *laser);
 void updatePlayer(gobj_t *player, gobj_t *laser);
 void updateLaser(gobj_t *laser);
-void initObj(gobj_t *obj, uint16_t startx, uint16_t starty, int16_t speed, uint8_t img, uint8_t active,
+void initObj(gobj_t *obj, uint16_t startx, uint16_t starty, int16_t speed, uint8_t img, uint8_t active, int8_t health,
              uint16_t boxX1, uint16_t boxY1, uint16_t boxX2, uint16_t boxY2);
 
 void writeToUpdateBuffer(gobj_t *obj, uint8_t upBuffer[WIDTH_PF][HEIGHT_PF]);

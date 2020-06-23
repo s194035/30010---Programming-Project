@@ -281,18 +281,18 @@ void lcd_face_six(uint8_t *buffer){
 
 void lcd_face_anim(uint8_t setface, uint8_t *faceAnim, uint8_t *faceCount){
 
-    // if face are set to either happy or angry, then set the index and run the counter
+    // if face are set to either angry (1) or happy (2), then set the index and run the counter
     if (setface == 1){
         *faceAnim = 3;
         *faceCount = 0;
     }
     if (setface == 2){
-        *faceAnim = 2;
+        *faceAnim = 4;
         *faceCount = 0;
     }
 
     // if the happy/angryface cooldown runs down, the reset back to idle:
-    if (*faceAnim <= 50 && (*faceAnim == 3 || *faceAnim == 4)){
+    if (*faceCount >= 20 && (*faceAnim == 3 || *faceAnim == 4)){
         *faceAnim = 0; // go back to idle
         *faceCount = 0; // reset counter
     }
@@ -316,7 +316,7 @@ void lcd_face_anim(uint8_t setface, uint8_t *faceAnim, uint8_t *faceCount){
     }
 }
 
-void lcd_controller(uint8_t *buffer, uint8_t lives, uint8_t face){
+void lcd_controller(uint8_t *buffer, int8_t lives, uint8_t face){
 
     // draw face
     switch(face){
@@ -347,9 +347,9 @@ void lcd_controller(uint8_t *buffer, uint8_t lives, uint8_t face){
 
 
     // draw healthbar
-    if(lives == 0){
+    if(lives <= 0){
         lcd_health_bar_zero(buffer);
-        lcd_face_five(buffer); // override face if health is zero
+        lcd_face_six(buffer); // override face if health is zero
     }
 
     if(lives == 1){
@@ -368,7 +368,7 @@ void lcd_controller(uint8_t *buffer, uint8_t lives, uint8_t face){
         lcd_health_bar_four(buffer);
     }
 
-    if(lives == 5){
+    if(lives >= 5){
     lcd_health_bar_five(buffer);
     }
     lcd_push_buffer(buffer);
