@@ -266,3 +266,12 @@ void printSettings(){
     gotoxy(80,17);
     printf("Hard");
 }
+
+void printPauseScreen(){
+    gotoxy(80,80);
+    printf("Continue");
+    gotoxy(80,82);
+    printf("Back to main menu");
+    gotoxy(100,80);
+    printf("O");
+}

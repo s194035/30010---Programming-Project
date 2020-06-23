@@ -13,7 +13,7 @@ void printSettings();
 void printPlayer();
 void moveCursorDown(uint8_t x0, uint8_t y0);
 void moveCursorUp(uint8_t x0, uint8_t y0);
-
+void printPauseScreen();
 
 
 #endif

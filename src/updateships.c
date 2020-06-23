@@ -3,7 +3,7 @@
 uint8_t boundaryCheck(uint8_t w, uint8_t h, uint16_t x, uint16_t y){
 
     // since all x,y coordinates are in 8.8, we have to remember to shift to the right:
-    if ((x >> FIX8_shift)  < 0 || WIDTH_PF - GRAPH_SIZE < (x >> FIX8_shift) || (y >> FIX8_shift) < 0 || HEIGHT_PF - GRAPH_SIZE < (y >> FIX8_shift)){
+    if ((x >> FIX8_shift)  < 0 || w - GRAPH_SIZE < (x >> FIX8_shift) || (y >> FIX8_shift) < 0 || h - GRAPH_SIZE < (y >> FIX8_shift)){
             return 1; // graphics outside boundary
     }
     return 0; // else return 0
@@ -26,7 +26,7 @@ uint8_t i;
     // if all lasers are active, then don't shoot any
 }
 
-void updatePlayer(gobj_t *player, gobj_t laser[]){
+void updatePlayer(gobj_t *player, gobj_t laser[], uint8_t *gameRunning){
 
     if (player->active){
 
@@ -73,10 +73,16 @@ void updatePlayer(gobj_t *player, gobj_t laser[]){
         if (controlChar == 32){
                 spawnLaser(player, laser);
         }
+
+        // pause
+        if (controlChar == 27){
+                *gameRunning = pause();
+        }
+
         player->x = tempx;
         player->y = tempy;
 
-        // clear input buffer to avoid sticky inputs
+        // clear input buffer
         uart_clear();
     }
 }

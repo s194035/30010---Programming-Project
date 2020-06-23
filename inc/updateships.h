@@ -5,6 +5,7 @@
 #include "ansi.h"
 #include "graphicsSheet.h"
 #include "pin_io.h"
+#include "gameLoop.h"
 
 // general
 #define SET_ACTIVE 1
@@ -67,7 +68,7 @@ typedef struct {
 
 uint8_t boundaryCheck(uint8_t w, uint8_t h, uint16_t x, uint16_t y);
 void spawnLaser(gobj_t *player, gobj_t *laser);
-void updatePlayer(gobj_t *player, gobj_t *laser);
+void updatePlayer(gobj_t *player, gobj_t laser[], uint8_t *gameRunning);
 void updateLaser(gobj_t *laser);
 void initObj(gobj_t *obj, uint16_t startx, uint16_t starty, int16_t speed, uint8_t img, uint8_t active, int8_t health,
              uint16_t boxX1, uint16_t boxY1, uint16_t boxX2, uint16_t boxY2);

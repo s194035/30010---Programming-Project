@@ -10,6 +10,7 @@
 #include "updateships.h"
 #include <string.h>
 #include "charset.h"
+#include "gameScreen.h"
 
 #define MAX_C_GRAPH 40
 #define MAX_C_UPDATERATE 20
@@ -18,6 +19,7 @@
 static uint32_t checkCount; //This counter will overflow after 44 hours! At that point, the gameloop breaks.
 
 void TIM2_IRQHandler(void);
+uint8_t pause();
 void gameLoop(uint8_t settings);
 
 

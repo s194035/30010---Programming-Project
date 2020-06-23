@@ -10,7 +10,6 @@
 #include "gameLoop.h"
 #include "gameScreen.h"
 
-
 int main()
 {
     uart_init(115200);
@@ -24,6 +23,7 @@ int main()
     settings = mainMenu(highScore);
     gameLoop(settings);
 
+    printf("game end");
     while(1){};
 
 }
