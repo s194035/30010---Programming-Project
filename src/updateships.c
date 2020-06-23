@@ -26,6 +26,7 @@ uint8_t i;
     // if all lasers are active, then don't shoot any
 }
 
+// handling player 1
 void updatePlayer(gobj_t *player, gobj_t laser[], uint8_t *gameRunning){
 
     if (player->active){
@@ -86,6 +87,52 @@ void updatePlayer(gobj_t *player, gobj_t laser[], uint8_t *gameRunning){
         uart_clear();
     }
 }
+
+// handling player 2
+void updatePlayer2(gobj_t *player, gobj_t laser[]){
+
+    if (player->active){
+
+        uint16_t tempx = player->x;
+        uint16_t tempy = player->y;
+        int16_t tempspeed = player->speed;
+
+        char controlChar = readJoystick();
+
+        // x position
+        if (controlChar == 8){
+
+                if (!boundaryCheck(WIDTH_PF, HEIGHT_PF, (tempx + tempspeed), tempy)){
+                    tempx += tempspeed;
+                }
+        }
+        if (controlChar == 4){
+
+                if(!(boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx - tempspeed, tempy)))
+                tempx -= tempspeed;
+        }
+
+        // y position
+        if (controlChar == 1){
+
+                if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy - tempspeed))
+                tempy -= tempspeed;
+        }
+        if (controlChar == 2){
+
+                if(!boundaryCheck(WIDTH_PF, HEIGHT_PF, tempx, tempy+tempspeed))
+                tempy += tempspeed;
+        }
+
+        // shoot
+        if (controlChar == 16){
+                spawnLaser(player, laser);
+        }
+        player->x = tempx;
+        player->y = tempy;
+    }
+}
+
 
 void updateLaser(gobj_t laser[]){
     uint8_t i;
@@ -344,7 +391,7 @@ void updateEnemy(gobj_t enemy[]){
     }
 }
 
-void enemyHandler(gobj_t enemy[], uint8_t difficulty){
+void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *gameRunning){
     static uint8_t timeline_index = 0;
     static uint8_t formation_index = 0;
     static uint8_t timer = 0;
@@ -368,6 +415,14 @@ void enemyHandler(gobj_t enemy[], uint8_t difficulty){
     uint8_t form5[8] = {0x42, 0x01, 0x41, 0x43, 0x01, 0x40, 0x44, 0x01}; // triangle formation of 5;
     uint8_t form6[7] = {0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x01}; // horizontal line formation of 5;
     uint8_t form7[10] = {0x40, 0x01, 0x40, 0x01, 0x40, 0x01, 0x40, 0x01, 0x40, 0x01}; // vertical line formation of 5
+
+    // before we do anything, we check if we should reset the static variables:
+    if (reset){
+        timeline_index = 0;
+        formation_index = 0;
+        timer = 0;
+        return;
+    }
     // first we read parameters from the timeline entry:
     // Offset position [11:8]: offset the formation by this much:
     offsetPos = ((timeline0[timeline_index] & 0x0F00) >> 8);
@@ -377,6 +432,8 @@ void enemyHandler(gobj_t enemy[], uint8_t difficulty){
     switch(timeline0[timeline_index] & 0x00FF){
 
         case 0:
+            //zero means end of wave. So we win!
+            *gameRunning = wonLevel(difficulty);
             return;
 
         case 1:
@@ -423,7 +480,7 @@ void enemyHandler(gobj_t enemy[], uint8_t difficulty){
                 // read wait time from [5:0]. The wait time have been multiplied by graphic size
                 // So enemies are spaced out by sprite size;
                 time = (formptr[formation_index] & 0x3F);
-                time *= GRAPH_SIZE;
+                time *= GRAPH_SIZE * 8;
 
                 if(time > timer){
                     // if the wait requirement hasent been met, then return.

@@ -14,6 +14,8 @@ void printPlayer();
 void moveCursorDown(uint8_t x0, uint8_t y0);
 void moveCursorUp(uint8_t x0, uint8_t y0);
 void printPauseScreen();
+void printGameOverScreen(uint16_t *score);
+void printWinScreen(uint8_t *difficulty);
 
 
 #endif

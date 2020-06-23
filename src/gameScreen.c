@@ -242,15 +242,6 @@ void printHighScore(uint16_t *highScore){
     printf("5: %d", highScore[4]);
 }
 
-void printGameOver(){
-    gotoxy(80,13);
-    printf("Game Over");
-    gotoxy(80,15);
-    printf("You have lost all your lives.");
-    gotoxy(80,17);
-    printf("Your final score was: ");
-}
-
 void printPlayer(){
     gotoxy(80,13);
     printf("1 Player");
@@ -272,6 +263,28 @@ void printPauseScreen(){
     printf("Continue");
     gotoxy(80,82);
     printf("Back to main menu");
+    gotoxy(100,80);
+    printf("O");
+}
+
+void printGameOverScreen(uint16_t *score){
+    gotoxy(80,80);
+    printf("Continue");
+    gotoxy(80,82);
+    printf("Back to main menu");
+    gotoxy(80,78);
+    printf("Your final score was: %d", *score);
+    gotoxy(100,80);
+    printf("O");
+}
+
+void printWinScreen(uint8_t *difficulty){
+    gotoxy(80,80);
+    printf("Continue");
+    gotoxy(80,82);
+    printf("Back to main menu");
+    gotoxy(80, 78);
+    printf("Do you want to proceed to level %d?", *difficulty);
     gotoxy(100,80);
     printf("O");
 }

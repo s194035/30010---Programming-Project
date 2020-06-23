@@ -16,14 +16,15 @@ int main()
     ioConfig();
     ledsetup();
     lcd_init();
+    JoystickSetup();
     // temp variable
     uint8_t settings;
     uint16_t highScore[10] = {0,0,0,0,0,0,0,0,0,0};
 
-    settings = mainMenu(highScore);
-    gameLoop(settings);
-
-    printf("game end");
-    while(1){};
-
+    while(1){
+        settings = mainMenu(highScore);
+        clrscr();
+        highScore[9] = gameLoop(settings);
+        clrscr();
+    };
 }

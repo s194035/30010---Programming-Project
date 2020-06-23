@@ -19,8 +19,11 @@
 static uint32_t checkCount; //This counter will overflow after 44 hours! At that point, the gameloop breaks.
 
 void TIM2_IRQHandler(void);
+uint8_t choice();
 uint8_t pause();
-void gameLoop(uint8_t settings);
+uint8_t gameOver();
+uint8_t wonLevel(uint8_t *difficulty);
+uint16_t gameLoop(uint8_t settings);
 
 
 #endif
