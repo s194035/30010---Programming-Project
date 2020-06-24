@@ -189,6 +189,8 @@ void printMainMenu(){
     printf("Settings");
     gotoxy(80,19);
     printf("Help");
+    gotoxy(70, 40);
+    printf("Created by, Frederik Justesen s194035, Marcus Lari s194004, Magnus Flemming s194013.");
     gotoxy(95, 13);
     printf("O");
 }
@@ -201,15 +203,27 @@ void printHelp(){
     gotoxy(40,15);
     printf("The objective of Space Force is to shoot the enemies approaching from the top");
     gotoxy(40,17);
-    printf("of the screen. You must not get hit by the enemies or their projectiles. You");
+    printf("of the screen. You must not get hit by the enemies. You move your spaceship with");
     gotoxy(40,19);
-    printf("move your spaceship with the WASD-keys and shoot with Q. You have three lives");
+    printf("the WASD-keys and shoot with SPACE BAR. You start with three lives and a face");
     gotoxy(40,21);
-    printf("and a face indicating your mental state, both are shown on the LCD screen.");
+    printf("indicating your mental state, both are shown on the LCD screen.");
     gotoxy(40,23);
-    printf("If you want more games like this consider supporting us on Patreon. But enough");
+    printf("Sometimes a power-up will appear on the screen. Touch it, and you will be");
     gotoxy(40,25);
-    printf("talk, let's play.");
+    printf("granted an extra life. In game, you can click the ESC key to pause the game.");
+    gotoxy(40,27);
+    printf("Once a certain amount of enemies has been defeated you will proceed to another");
+    gotoxy(40,29);
+    printf("level with higher difficulty. You can choose to play 1 player or 2 players, and");
+    gotoxy(40,31);
+    printf("also select difficulty in the Settings. The high score for the session will be stored");
+    gotoxy(40,33);
+    printf("and you can always see the score list in the main menu. When you get hit, your lives will");
+    gotoxy(40,35);
+    printf("decrement and the face on the LCD will change facial expression. Good luck with trying to get");
+    gotoxy(40,37);
+    printf("the highest score.");
 }
 
 void printHighScore(uint16_t *highScore){

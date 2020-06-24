@@ -127,6 +127,9 @@ uint16_t gameLoop(uint8_t settings){
     gobj_t player0, player1;
     gobj_t playerArray[PLAYER_POOL] = {player0, player1};
 
+    gobj_t powerup0, powerup1, powerup2;
+    gobj_t powerupArray[POWERUP_POOL] = {powerup0, powerup1, powerup2};
+
     gobj_t enemy0, enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7,
            enemy8, enemy9, enemy10, enemy11, enemy12, enemy13, enemy14, enemy15;
     gobj_t enemyArray[ENEMY_POOL] = {enemy0, enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7,
@@ -143,7 +146,9 @@ uint16_t gameLoop(uint8_t settings){
     if (playerNum > 1){
         playerArray[1].active = 1;
     }
-
+    for (i = 0; i < POWERUP_POOL; i++){
+            initObj(&powerupArray[i], 0, 0, 0, 6, SET_INACTIVE, 0, POWERUP_BBOX_XY1, POWERUP_BBOX_XY1, POWERUP_BBOX_XY2, POWERUP_BBOX_XY2);
+    }
     for (i = 0; i < LASER_POOL; i++){
             initObj(&laserArray[i], 0, 0, 0, 1, SET_INACTIVE, LASER_HEALTH, LASER_BBOX_x1, LASER_BBOX_Y1, LASER_BBOX_X2, LASER_BBOX_Y2); // initialize all lasers
     }
@@ -185,11 +190,28 @@ uint16_t gameLoop(uint8_t settings){
                         laserArray[i].active = 0;
                         score += 100;
                         printScore(score); // update score
+                        // randomly generate powerup
+                        generatePowerup(enemyArray[j].x, enemyArray[j].y, powerupArray);
+                    }
+                }
+            }
+            // check for collision between players and power ups
+            for (i=0; i < POWERUP_POOL; i++) {
+                for (j=0; j < PLAYER_POOL; j++){
+                    if (checkCollision(&powerupArray[i], &playerArray[j])){
+                        powerupArray[i].active = 0;
+                        lcd_face_anim(2, &faceAnim, &faceCount);
+                        score += 250;
+                        printScore(score); // update score
+                        // Prevent health overflow
+                        if (playerArray[0].health < PLAYER_MAX_HEALTH){
+                            playerArray[0].health++;
+                        }
                     }
                 }
             }
             // check for collision between players and enemies
-            for (i=0; i < ENEMY_POOL; i++)
+            for (i=0; i < ENEMY_POOL; i++) {
                 for (j=0; j < PLAYER_POOL; j++){
                     if (checkCollision(&playerArray[j], &enemyArray[i])){
                         enemyArray[i].active = 0;
@@ -198,6 +220,7 @@ uint16_t gameLoop(uint8_t settings){
                         if (playerArray[0].health > 0){
                             playerArray[0].health--; // the two players share the same health pool
                         }
+                    }
                 }
             }
 
@@ -227,6 +250,10 @@ uint16_t gameLoop(uint8_t settings){
             // draw players
             for (i = 0; i < (PLAYER_POOL); i++){
                 writeToUpdateBuffer(&playerArray[i], pfUpdate);
+            }
+            // draw powerups
+            for (i = 0; i < POWERUP_POOL; i++){
+                writeToUpdateBuffer(&powerupArray[i], pfUpdate);
             }
             // draw enemies
             for (i = 0; i < (ENEMY_POOL); i++){

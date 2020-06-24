@@ -2,8 +2,10 @@
 #define UPDATESHIPS_H
 
 #include "30010_io.h"
-#include "gameObject.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include "gameObject.h"
 #include "ansi.h"
 #include "graphicsSheet.h"
 #include "pin_io.h"
@@ -30,6 +32,10 @@
 #define PLAYER_MAX_HEALTH 5 // max health
 #define PLAYER_POOL 2 // max amount of players
 
+//power up constants
+#define POWERUP_BBOX_XY1 0
+#define POWERUP_BBOX_XY2 5
+#define POWERUP_POOL 3
 // enemy constants
 #define ENEMY_POOL 16 // amount of enemies on screen
 #define ENEMY_BBOX_XY1 1 // x and y coordinates for bbox
@@ -64,5 +70,6 @@ void updateEnemy(gobj_t enemy[]);
 void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *gameRunning);
 void printScore(uint16_t score);
 void printLevel(uint8_t leve);
+void generatePowerup(uint16_t x, uint16_t y, gobj_t powerupArray[]);
 
 #endif

@@ -5,8 +5,8 @@
 #include "30010_io.h"
 #include "updateships.h"
 
-#define WIDTH 50
-#define HEIGHT 70
+#define WIDTH 164
+#define HEIGHT 48
 #define X_OFFSET 8
 #define Y_OFFSET 8
 

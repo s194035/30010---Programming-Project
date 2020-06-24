@@ -399,13 +399,26 @@ void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *g
     uint8_t flag_breakloop;
     uint8_t *formptr; // for ref the formation
     uint8_t formlength; // represents formation length
+    uint16_t *timeptr; // for ref til timeline
+    uint8_t timeLenRef; // saves the max timeline length
     uint8_t pos; // position in formation
     uint16_t time = 0; // wait time in formation
     uint8_t offsetPos; //set by the timeline to offset formations
 
     ////////////////////////////////////// timeline decelerations ///////////////////////////////
-    uint8_t time0Length = 7;
-    uint16_t timeline0[7] = {0x0004, 0x0002, 0x0005, 0x0005, 0x0002, 0x0304, 0x0000};
+    // Easy:
+    uint8_t time0Length = 21;
+    uint16_t timeline0[21] = {0x0004, 0x0001, 0x0404, 0x0001, 0x0004, 0x0001, 0x0006, 0x0001, 0x0504, 0x0001, 0x0104,
+                             0x0001, 0x0205, 0x0002, 0x0407, 0x0001, 0x0004, 0x0001, 0x0001, 0x0001, 0x0000};
+    // Medium
+    uint8_t time1Length = 21;
+    uint16_t timeline1[21] =  {0x0304, 0x0002, 0x0105, 0x0002, 0x0004, 0x0404, 0x0002, 0x0007, 0x0207, 0x0407,
+                             0x0002, 0x0004, 0x03004, 0x05004, 0x0002, 0x0205, 0x0407, 0x0001, 0x0001, 0x0001, 0x0000};
+    // Hard
+    uint8_t time2Length = 29;
+    uint16_t timeline2[29] = {0x0205, 0x0407, 0x0002, 0x01004, 0x0305, 0x0507, 0x0002, 0x0007, 0x0207, 0x0407, 0x0002,
+                            0x0004, 0x0002, 0x0104, 0x0002, 0x0504, 0x0002, 0x0104, 0x0507, 0x0107, 0x0407, 0x0207,
+                            0x03007, 0x0707, 0x0407, 0x0001, 0x0001, 0x0001, 0x0000};
 
     ///////////////////////////////////// formations decelerations ////////////////////////////////
     uint8_t form1[1] = {0x10}; // wait till screen is clear;
@@ -423,13 +436,37 @@ void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *g
         timer = 0;
         return;
     }
-    // first we read parameters from the timeline entry:
+    // first we decide which timeline we want to read:
+    switch(*difficulty){
+
+        case 1:
+            timeptr = timeline0;
+            timeLenRef = time0Length;
+            break;
+
+        case 2:
+            timeptr = timeline1;
+            timeLenRef = time1Length;
+            break;
+
+        case 3:
+            timeptr = timeline2;
+            timeLenRef = time2Length;
+            break;
+        // in the odd event that the player somehow manages to set difficulty to an invalid number:
+        default:
+            timeptr = timeline0;
+            timeLenRef = time0Length;
+            break;
+    }
+
+    // Then we read parameters from the timeline entry:
     // Offset position [11:8]: offset the formation by this much:
-    offsetPos = ((timeline0[timeline_index] & 0x0F00) >> 8);
+    offsetPos = ((timeptr[timeline_index] & 0x0F00) >> 8);
     offsetPos *= GRAPH_SIZE;
     // then we choose which formation to create from bits [7:0]
     // if bits [7:0] = 0x00 then the timeline will always stop reading and return to gameloop
-    switch(timeline0[timeline_index] & 0x00FF){
+    switch(timeptr[timeline_index] & 0x00FF){
 
         case 0:
             //zero means end of wave. So we win!
@@ -485,7 +522,7 @@ void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *g
                 // read wait time from [5:0]. The wait time have been multiplied by graphic size
                 // So enemies are spaced out by sprite size;
                 time = (formptr[formation_index] & 0x3F);
-                time *= GRAPH_SIZE * 8;
+                time *= (GRAPH_SIZE + 6);
 
                 if(time > timer){
                     // if the wait requirement hasent been met, then return.
@@ -513,7 +550,7 @@ void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *g
 
                         if (!enemy[i].active){
                             // remember x and y are in fixed point so shift to the LEFT to get fixed point 8.8
-                            initObj(&enemy[i], (pos + offsetPos) << FIX8_shift, 0, ENEMY_SPEED, 2, SET_ACTIVE, ENEMY_HEALTH, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2);
+                            initObj(&enemy[i], (pos + offsetPos) << FIX8_shift, 0, ENEMY_SPEED * *difficulty, 2, SET_ACTIVE, ENEMY_HEALTH, ENEMY_BBOX_XY1, ENEMY_BBOX_XY1, ENEMY_BBOX_XY2, ENEMY_BBOX_XY2);
                             flag_breakloop = 0;
                     }
                 }
@@ -522,7 +559,7 @@ void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *g
         }
         // finally we check if we are finished reading the formation, and increments
         // timeline index (but only if it doesnt overflow the timeline!)
-        if ((formation_index <= formlength) && (timeline_index < time0Length)){
+        if ((formation_index <= formlength) && (timeline_index < timeLenRef)){
             timeline_index++;
             formation_index = 0; // reset formation index when we are done
             timer = 0;
@@ -537,4 +574,21 @@ void printScore(uint16_t score){
 void printLevel(uint8_t level){
     gotoxy(PF_OFF_X + (WIDTH_PF/2) - 8, PF_OFF_Y/2 - 1);
     printf("Difficulty: %d", level);
+}
+
+void generatePowerup(uint16_t x, uint16_t y, gobj_t powerupArray[]){
+    uint8_t i;
+    uint8_t random;
+
+    random = rand();
+
+    if (random < 50){
+        for (i=0; i < POWERUP_POOL; i++){
+            if (!(powerupArray[i].active)){
+                initObj(&powerupArray[i], x, y, 0, 6, 1, 0, POWERUP_BBOX_XY1, POWERUP_BBOX_XY1, POWERUP_BBOX_XY2, POWERUP_BBOX_XY2);
+                break;
+            }
+        }
+        srand(y); // use y position to generate new seed
+    }
 }
