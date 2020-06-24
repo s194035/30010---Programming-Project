@@ -1,6 +1,8 @@
 #ifndef UPDATESHIPS_H
 #define UPDATESHIPS_H
+
 #include "30010_io.h"
+#include "gameObject.h"
 #include <string.h>
 #include "ansi.h"
 #include "graphicsSheet.h"
@@ -44,29 +46,6 @@
 // for fixedpoint calculations:
 #define FIX8_shift 8
 
-typedef struct {
-    uint16_t x; // x position in floating point 8.8 (remember to shift >> 4 when using this number!)
-    uint16_t y; // y position in floating point 8.8
-    int16_t speed; // speed in floating point 8.8 *IMPORTANT* must be signed
-
-    // graphic
-    uint8_t img;
-
-    //flags
-    uint8_t active;
-
-    int8_t health; // set to a signed value to allow a small buffer to prevent overflow
-
-    //Collison bounds:
-    uint16_t boxX1;
-    uint16_t boxY1;
-    uint16_t boxX2;
-    uint16_t boxY2;
-
-
-} gobj_t;
-
-
 uint8_t boundaryCheck(uint8_t w, uint8_t h, uint16_t x, uint16_t y);
 void spawnLaser(gobj_t *player, gobj_t *laser);
 void updatePlayer(gobj_t *player, gobj_t laser[], uint8_t *gameRunning);
@@ -83,4 +62,7 @@ uint8_t checkCollision(gobj_t *obj1, gobj_t *obj2);
 
 void updateEnemy(gobj_t enemy[]);
 void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *gameRunning);
+void printScore(uint16_t score);
+void printLevel(uint8_t leve);
+
 #endif

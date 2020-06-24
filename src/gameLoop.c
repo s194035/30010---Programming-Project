@@ -23,7 +23,7 @@ uint8_t choice(){
                 if (controlChar == 'w'){
                     choice++;
                     // print over choice
-                    moveCursorUp(100, 82);
+                    moveCursorUp(45, 88);
                 }
                 break;
 
@@ -31,11 +31,12 @@ uint8_t choice(){
                 if (controlChar == 's'){
                     choice--;
                     // print over choice
-                   moveCursorDown(100, 80);
+                   moveCursorDown(45, 86);
                 }
                 break;
         }
         if (controlChar == 13){
+            printBlank();
             return(choice);
         }
     }
@@ -47,7 +48,7 @@ uint8_t pause(){
     return(choice());
 }
 
-uint8_t gameOver (gobj_t playerArray[], gobj_t enemyArray[], gobj_t laserArray[], uint16_t *score){
+uint8_t gameOver(gobj_t playerArray[], gobj_t enemyArray[], gobj_t laserArray[], uint16_t *score, uint8_t playerNum){
 
     uint8_t i;
 
@@ -56,7 +57,9 @@ uint8_t gameOver (gobj_t playerArray[], gobj_t enemyArray[], gobj_t laserArray[]
     if (choice()){
         // init player
         initObj(&playerArray[0], ((WIDTH_PF/2) << FIX8_shift), ((HEIGHT_PF-8) << FIX8_shift), PLAYER_SPEED, 0, SET_ACTIVE, PLAYER_START_HEALTH, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2); // initialize player.
-        initObj(&playerArray[1], ((WIDTH_PF/2) << FIX8_shift), ((HEIGHT_PF-16) << FIX8_shift), PLAYER_SPEED, 0, SET_INACTIVE, PLAYER_START_HEALTH, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2);
+        if (playerNum > 1){
+            initObj(&playerArray[1], ((WIDTH_PF/2) << FIX8_shift), ((HEIGHT_PF-16) << FIX8_shift), PLAYER_SPEED, 0, SET_ACTIVE, PLAYER_START_HEALTH, PLAYER_BBOX_XY1, PLAYER_BBOX_XY1, PLAYER_BBOX_XY2, PLAYER_BBOX_XY2);
+        }
         // set all objects to inactive
         // note: I now the biggest pool of all is the enemypool. Should probably check for biggest pool
         for (i=0; i < ENEMY_POOL; i++){
@@ -80,16 +83,8 @@ uint8_t gameOver (gobj_t playerArray[], gobj_t enemyArray[], gobj_t laserArray[]
 uint8_t wonLevel(uint8_t *difficulty){
 
     printWinScreen(difficulty);
-    if (choice()){
-            // increment difficulty if you won the level
-        if (*difficulty <= 3){
-            *difficulty++;
-
-            return(1);
-        }
-    }
-
-    return(0);
+    printLevel(*difficulty); // update level display
+    return(choice());
 }
 
 // the biggest, meanest function
@@ -100,6 +95,7 @@ uint16_t gameLoop(uint8_t settings){
     uint8_t i;
     uint8_t j;
     // variables to save a point in time and handle flow:
+    checkCount = 0;
     uint32_t midTime1 = 0;
     uint32_t midTime2 = 0;
     uint16_t delay; // update dependent timer
@@ -158,8 +154,13 @@ uint16_t gameLoop(uint8_t settings){
     // just as a safety measure, we reset the enemy handler:
     enemyHandler(enemyArray, &difficulty, 1, &gameRunning);
 
-     //draw border
+     //draw borders
     box2(PF_OFF_X-1, PF_OFF_Y-1, PF_OFF_X + WIDTH_PF, PF_OFF_Y + HEIGHT_PF);
+    box2(PF_OFF_X-1, 0, PF_OFF_X + WIDTH_PF, PF_OFF_Y-2);
+    box2(PF_OFF_X-1, PF_OFF_Y + HEIGHT_PF + 1, PF_OFF_X + WIDTH_PF, PF_OFF_Y + HEIGHT_PF + 13);
+    printScore(score);
+    printLevel(difficulty);
+    title(PF_OFF_X + (WIDTH_PF/2) - 8, 0, "Space Force");
 
     ////////////////////////////////////////// Game loop ///////////////////////////////////////////////
     while(gameRunning){
@@ -183,6 +184,7 @@ uint16_t gameLoop(uint8_t settings){
                         enemyArray[j].active = 0;
                         laserArray[i].active = 0;
                         score += 100;
+                        printScore(score); // update score
                     }
                 }
             }
@@ -209,7 +211,7 @@ uint16_t gameLoop(uint8_t settings){
             // if the gameover delay has run out, then call the function and reset enemyHandler
             if (delay >= 100 && !(playerArray[0].active) && !(playerArray[0].active)){
                 enemyHandler(enemyArray, &difficulty, 1, &gameRunning);
-                gameRunning = gameOver(playerArray,enemyArray, laserArray, &score);
+                gameRunning = gameOver(playerArray,enemyArray, laserArray, &score, playerNum);
                 delay = 0;
             }
 

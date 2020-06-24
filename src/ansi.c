@@ -139,16 +139,6 @@ void box(uint8_t width, uint8_t height){
 void box2(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
     uint8_t i;
 
-    // Drawing the corners of the window
-    gotoxy(x1,y1);
-    printf("%c\n", 201);
-    gotoxy(x2,y1);
-    printf("%c",187);
-    gotoxy(x1,y2);
-    printf("%c", 200);
-    gotoxy(x2,y2);
-    printf("%c", 188);
-
     // Drawing the horizontal lines
     for(i = y1+1; i<y2; i++){
             gotoxy(x1,i);
@@ -164,6 +154,16 @@ void box2(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
             gotoxy(i,y2);
             printf("%c",205);
     }
+
+    // Drawing the corners of the window
+    gotoxy(x1,y1);
+    printf("%c\n", 201);
+    gotoxy(x2,y1);
+    printf("%c",187);
+    gotoxy(x1,y2);
+    printf("%c", 200);
+    gotoxy(x2,y2);
+    printf("%c", 188);
 }
 // This functions draws a window with a title and 2 different styles.
 /*

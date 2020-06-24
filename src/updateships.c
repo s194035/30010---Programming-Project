@@ -433,6 +433,11 @@ void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *g
 
         case 0:
             //zero means end of wave. So we win!
+            // increase the difficulty and reset enemyHandler:
+            if (*difficulty < 3){
+                *difficulty += 1;
+            }
+            enemyHandler(enemy, difficulty, 1, gameRunning);
             *gameRunning = wonLevel(difficulty);
             return;
 
@@ -522,4 +527,14 @@ void enemyHandler(gobj_t enemy[], uint8_t *difficulty, uint8_t reset, uint8_t *g
             formation_index = 0; // reset formation index when we are done
             timer = 0;
         }
+}
+
+void printScore(uint16_t score){
+    gotoxy(PF_OFF_X + (WIDTH_PF/2) - 8, PF_OFF_Y/2);
+    printf("Score: %05d", score);
+}
+
+void printLevel(uint8_t level){
+    gotoxy(PF_OFF_X + (WIDTH_PF/2) - 8, PF_OFF_Y/2 - 1);
+    printf("Difficulty: %d", level);
 }

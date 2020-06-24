@@ -3,10 +3,6 @@
 #include "ansi.h"
 #include "pin_io.h"
 #include "lcd.h"
-#include "time.h"
-#include "updateships.h"
-#include <string.h>
-#include "charset.h"
 #include "gameLoop.h"
 #include "gameScreen.h"
 

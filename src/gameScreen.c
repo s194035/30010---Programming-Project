@@ -3,9 +3,6 @@
 #include "updateships.h"
 #include <stdio.h>
 
-#define WIDTH 168
-#define HEIGHT 44
-
 
 uint8_t mainMenu(uint16_t *highScore){
     uint8_t startPoint = 0;
@@ -259,32 +256,50 @@ void printSettings(){
 }
 
 void printPauseScreen(){
-    gotoxy(80,80);
+    gotoxy(25, 82);
+    printf("Paused!");
+    gotoxy(25,86);
     printf("Continue");
-    gotoxy(80,82);
+    gotoxy(25,88);
     printf("Back to main menu");
-    gotoxy(100,80);
+    gotoxy(45,86);
     printf("O");
 }
 
+void printBlank(){
+    // the worst way to clear an area of the screen, but the alternatives are worse:
+    gotoxy(25, 82);
+    printf("                             ");
+    gotoxy(25, 83);
+    printf("                             ");
+    gotoxy(25, 86);
+    printf("                             ");
+    gotoxy(25, 88);
+    printf("                             ");
+}
+
 void printGameOverScreen(uint16_t *score){
-    gotoxy(80,80);
-    printf("Continue");
-    gotoxy(80,82);
-    printf("Back to main menu");
-    gotoxy(80,78);
+    gotoxy(25, 82);
+    printf("Game Over!");
+    gotoxy(25, 83);
     printf("Your final score was: %d", *score);
-    gotoxy(100,80);
+    gotoxy(25,86);
+    printf("Continue");
+    gotoxy(25,88);
+    printf("Back to main menu");
+    gotoxy(45,86);
     printf("O");
 }
 
 void printWinScreen(uint8_t *difficulty){
-    gotoxy(80,80);
+    gotoxy(25, 82);
+    printf("You won this level!");
+    gotoxy(25, 83);
+    printf("Do you want to go to level %d?", *difficulty);
+    gotoxy(25,86);
     printf("Continue");
-    gotoxy(80,82);
+    gotoxy(25,88);
     printf("Back to main menu");
-    gotoxy(80, 78);
-    printf("Do you want to proceed to level %d?", *difficulty);
-    gotoxy(100,80);
+    gotoxy(45,86);
     printf("O");
 }
