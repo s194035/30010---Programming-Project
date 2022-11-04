@@ -328,9 +328,6 @@ void drawFromBuffer(uint8_t upBuffer[WIDTH_PF][HEIGHT_PF], uint8_t scrBuffer[WID
                         //I have added a offset to Gotoxy to control where on screen
                         //we want to draw the playfield.
 
-                        // read the last four bits
-                       // fgcolor((upBuffer[i][j] & 0xf0) >> 4);
-
                         gotoxy(i + PF_OFF_X, j + PF_OFF_Y);
                         printf("%c", upBuffer[i][j]);
                         // Update scrBuffer:
